@@ -255,7 +255,7 @@ Open `http://localhost:3000` in your browser. Create an account and start chatti
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | How long access tokens last | `30` |
 | `REFRESH_TOKEN_EXPIRE_DAYS` | How long refresh tokens last | `7` |
 | `GROQ_API_KEY` | Your Groq API key | `gsk_...` |
-| `GROQ_MODEL` | Groq model to use | `llama-3.3-70b-versatile` |
+| `GROQ_MODEL` | Groq model to use | `openai/gpt-oss-120b` |
 | `APP_ENV` | Application environment | `development` |
 | `CORS_ORIGINS` | Allowed frontend origins | `http://localhost:3000` |
 

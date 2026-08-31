@@ -101,7 +101,7 @@ Scroll down to the **"Environment Variables"** section. Click **"Add Environment
 | `ACCESS_TOKEN_EXPIRE_MINUTES` | `30` |
 | `REFRESH_TOKEN_EXPIRE_DAYS` | `7` |
 | `GROQ_API_KEY` | Your Groq API key (`gsk_...`) |
-| `GROQ_MODEL` | `llama-3.3-70b-versatile` |
+| `GROQ_MODEL` | `openai/gpt-oss-120b` |
 | `APP_NAME` | `AI Banking Advisor` |
 | `APP_ENV` | `production` |
 | `CORS_ORIGINS` | (leave blank for now — fill in after Step 3) |
