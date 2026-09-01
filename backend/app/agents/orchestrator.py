@@ -161,8 +161,8 @@ async def run_agent(
             model=settings.GROQ_MODEL,
             messages=messages,
             stream=True,
-            temperature=0.7,
-            max_tokens=2048,
+            temperature=0.5,
+            max_tokens=4096,
         )
 
         async for chunk in stream:
