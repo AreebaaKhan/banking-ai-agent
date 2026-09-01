@@ -17,7 +17,7 @@ openai-agents==0.0.7
 openai>=1.66.5
 
 # Validation & Config
-pydantic>=2.10,<3.0
+pydantic[email]>=2.10,<3.0
 pydantic-settings>=2.5.2
 python-dotenv==1.0.1
 
