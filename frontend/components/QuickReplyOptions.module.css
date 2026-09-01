@@ -1,0 +1,87 @@
+/* QuickReplyOptions — clickable answer buttons */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: var(--max-chat-width);
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 0.5rem;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #5c8fdc;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-left: 0.25rem;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.option {
+  padding: 0.5rem 1.1rem;
+  background: rgba(92, 143, 220, 0.1);
+  border: 1px solid rgba(92, 143, 220, 0.2);
+  border-radius: 9999px;
+  color: #7eb5ff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 200ms ease;
+  cursor: pointer;
+}
+
+.option:hover {
+  background: rgba(92, 143, 220, 0.2);
+  border-color: rgba(92, 143, 220, 0.4);
+  transform: translateY(-1px);
+}
+
+.option:active {
+  transform: translateY(0);
+}
+
+/* Other input */
+.otherInput {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.textInput {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  background: #141b2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 200ms ease;
+}
+
+.textInput:focus {
+  border-color: rgba(92, 143, 220, 0.4);
+}
+
+.submitOther {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #5c8fdc, #2b5c9e);
+  border-radius: 8px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 200ms ease;
+}
+
+.submitOther:hover {
+  box-shadow: 0 0 8px rgba(92, 143, 220, 0.3);
+}
