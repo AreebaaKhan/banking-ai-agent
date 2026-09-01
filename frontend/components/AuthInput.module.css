@@ -1,0 +1,125 @@
+/* AuthInput — reusable auth field with error display */
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #a0aec0;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.01em;
+}
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputWrapError {
+  composes: inputWrap;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+  outline: none;
+}
+
+.input::placeholder {
+  color: #6b7689;
+}
+
+.inputWrap .input:focus {
+  border-color: rgba(92, 143, 220, 0.5);
+  box-shadow: 0 0 0 2px rgba(92, 143, 220, 0.1);
+}
+
+.inputWrap .input:hover:not(:focus) {
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Error state */
+.inputWrapError .input {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.03);
+}
+
+.inputWrapError .input:focus {
+  border-color: rgba(239, 68, 68, 0.7);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+}
+
+.errorText {
+  display: block;
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin-top: 0.35rem;
+  line-height: 1.4;
+}
+
+/* Password eye toggle */
+.eyeBtn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7689;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 200ms ease;
+}
+
+.eyeBtn:hover {
+  color: #a0aec0;
+}
+
+/* Select */
+.select {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-family: inherit;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+  outline: none;
+}
+
+.select:focus {
+  border-color: rgba(92, 143, 220, 0.5);
+  box-shadow: 0 0 0 2px rgba(92, 143, 220, 0.1);
+}
+
+.select option {
+  background: #141b2e;
+  color: #ffffff;
+}
+
+.chevron {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7689;
+  pointer-events: none;
+}

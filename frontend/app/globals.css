@@ -1,56 +1,57 @@
 /*
  * AI Banking Advisor — Design System
  *
- * Premium dark fintech theme with glassmorphism.
- * All design tokens defined as CSS custom properties.
+ * Premium dark navy fintech theme with glassmorphism.
+ * Based on deep midnight blue, muted slate accents, and soft white text.
  * Typography: Inter (Google Fonts)
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* ─── Design Tokens ────────────────────────────────────────────── */
 
 :root {
-  /* Colors — Dark Theme */
-  --color-bg-primary: #060B18;
-  --color-bg-secondary: #0D1425;
-  --color-bg-tertiary: #141C32;
-  --color-bg-elevated: #1A2342;
-  --color-bg-hover: #1E2A4A;
+  /* Colors — Deep Navy Theme */
+  --color-bg-primary: #0a0f1c;
+  --color-bg-secondary: #141b2e;
+  --color-bg-tertiary: #182233;
+  --color-bg-elevated: #1f2a44;
+  --color-bg-hover: #243149;
 
-  /* Accent Colors */
-  --color-accent-blue: #3B82F6;
-  --color-accent-blue-hover: #2563EB;
-  --color-accent-blue-subtle: rgba(59, 130, 246, 0.12);
-  --color-accent-gold: #D4A853;
-  --color-accent-gold-subtle: rgba(212, 168, 83, 0.12);
-  --color-accent-green: #10B981;
+  /* Accent Colors — Muted/Sophisticated Blue */
+  --color-accent-blue: #5c8fdc;
+  --color-accent-blue-hover: #4a7cc6;
+  --color-accent-blue-subtle: rgba(92, 143, 220, 0.1);
+  --color-accent-blue-deep: #2b5c9e;
+  --color-accent-gold: #d4af37;
+  --color-accent-gold-subtle: rgba(212, 175, 55, 0.1);
+  --color-accent-green: #10b981;
   --color-accent-green-subtle: rgba(16, 185, 129, 0.12);
-  --color-accent-red: #EF4444;
-  --color-accent-red-subtle: rgba(239, 68, 68, 0.12);
-  --color-accent-purple: #8B5CF6;
-  --color-accent-purple-subtle: rgba(139, 92, 246, 0.12);
+  --color-accent-red: #ef4444;
+  --color-accent-red-subtle: rgba(239, 68, 68, 0.1);
+  --color-accent-purple: #8b5cf6;
+  --color-accent-purple-subtle: rgba(139, 92, 246, 0.1);
 
   /* Text */
-  --color-text-primary: #F1F5F9;
-  --color-text-secondary: #94A3B8;
-  --color-text-tertiary: #64748B;
-  --color-text-inverse: #0F172A;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a0aec0;
+  --color-text-tertiary: #6b7689;
+  --color-text-inverse: #0a0f1c;
 
   /* Borders & Surfaces */
   --color-border: rgba(255, 255, 255, 0.06);
-  --color-border-hover: rgba(255, 255, 255, 0.12);
-  --color-glass: rgba(13, 20, 37, 0.75);
-  --color-glass-light: rgba(26, 35, 66, 0.6);
-  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-border-hover: rgba(92, 143, 220, 0.25);
+  --color-border-subtle: rgba(255, 255, 255, 0.04);
+  --color-glass: rgba(20, 27, 46, 0.75);
+  --color-glass-light: rgba(31, 42, 68, 0.5);
+  --color-overlay: rgba(0, 0, 0, 0.6);
 
   /* Gradients */
-  --gradient-blue: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
-  --gradient-gold: linear-gradient(135deg, #D4A853 0%, #B8860B 100%);
-  --gradient-card: linear-gradient(145deg, rgba(26,35,66,0.5) 0%, rgba(13,20,37,0.8) 100%);
-  --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.15) 0%, transparent 60%);
-  --gradient-hero: radial-gradient(ellipse at 30% 20%, rgba(59,130,246,0.08) 0%, transparent 50%),
-                   radial-gradient(ellipse at 70% 80%, rgba(139,92,246,0.06) 0%, transparent 50%);
+  --gradient-blue: linear-gradient(135deg, #5c8fdc 0%, #2b5c9e 100%);
+  --gradient-blue-subtle: linear-gradient(135deg, rgba(92, 143, 220, 0.15) 0%, rgba(43, 92, 158, 0.1) 100%);
+  --gradient-card: linear-gradient(145deg, rgba(31, 42, 68, 0.4) 0%, rgba(20, 27, 46, 0.6) 100%);
+  --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(92, 143, 220, 0.1) 0%, transparent 60%);
+  --gradient-hero: radial-gradient(ellipse at 50% 40%, rgba(43, 92, 158, 0.15) 0%, transparent 50%);
 
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -79,17 +80,16 @@
 
   /* Borders */
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
   --radius-full: 9999px;
 
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
-  --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
-  --shadow-glow-gold: 0 0 20px rgba(212, 168, 83, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-glow-blue: 0 0 20px rgba(92, 143, 220, 0.25);
 
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -97,9 +97,9 @@
   --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Layout */
-  --sidebar-width: 300px;
-  --header-height: 64px;
-  --max-chat-width: 820px;
+  --sidebar-width: 280px;
+  --header-height: 60px;
+  --max-chat-width: 760px;
 }
 
 
@@ -161,7 +161,7 @@ input, textarea, select {
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -169,12 +169,12 @@ input, textarea, select {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border-hover);
+  background: rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-tertiary);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 
@@ -292,7 +292,7 @@ input, textarea, select {
 
 .input-field:focus {
   border-color: var(--color-accent-blue);
-  box-shadow: 0 0 0 3px var(--color-accent-blue-subtle);
+  box-shadow: 0 0 0 2px var(--color-accent-blue-subtle);
 }
 
 .input-field:hover:not(:focus) {
@@ -308,14 +308,7 @@ input, textarea, select {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.text-gold {
-  background: var(--gradient-gold);
+  background: linear-gradient(135deg, var(--color-accent-blue), #7eb5ff);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -357,6 +350,16 @@ input, textarea, select {
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-6px); }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+
+@keyframes blink {
+  0%, 90%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
 }
 
 @keyframes typingDot {
@@ -415,8 +418,8 @@ input, textarea, select {
 
 .toast-container {
   position: fixed;
-  top: var(--space-4);
-  right: var(--space-4);
+  bottom: var(--space-6);
+  right: var(--space-6);
   z-index: 9999;
   display: flex;
   flex-direction: column;
@@ -430,7 +433,7 @@ input, textarea, select {
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  background: var(--color-bg-elevated);
+  background: var(--color-bg-tertiary);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
@@ -550,6 +553,6 @@ input, textarea, select {
 
 @media (max-width: 768px) {
   :root {
-    --sidebar-width: 280px;
+    --sidebar-width: 260px;
   }
 }
