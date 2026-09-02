@@ -1,0 +1,119 @@
+/* QuickReplies — Interactive option buttons */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  padding-left: 2px;
+}
+
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.optionBtn {
+  padding: 8px 18px;
+  background: linear-gradient(135deg, #1a3a6a 0%, #15305a 100%);
+  border: 1px solid rgba(90, 156, 245, 0.25);
+  border-radius: 8px;
+  color: #a8c8f0;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.optionBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #1e4580 0%, #1a3a6a 100%);
+  border-color: rgba(90, 156, 245, 0.5);
+  color: #c0d8f8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(90, 156, 245, 0.15);
+}
+
+.optionBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.optionSelected {
+  background: linear-gradient(135deg, #2a5090 0%, #1e4580 100%) !important;
+  border-color: #5a9cf5 !important;
+  color: #fff !important;
+}
+
+.optionDimmed {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.optionBtn:disabled {
+  cursor: default;
+}
+
+/* Other text input */
+.otherInput {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+  animation: slideIn 0.2s ease-out;
+}
+
+.otherField {
+  flex: 1;
+  padding: 8px 14px;
+  background: rgba(15, 22, 40, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.otherField:focus {
+  border-color: rgba(90, 156, 245, 0.4);
+}
+
+.otherField::placeholder {
+  color: #5a6a82;
+}
+
+.otherSubmit {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #4A8BF5 0%, #2A5FC7 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.otherSubmit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(74, 139, 245, 0.3);
+}
+
+.otherSubmit:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

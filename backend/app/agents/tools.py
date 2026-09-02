@@ -1,17 +1,178 @@
 """
-Agent tools — database query functions exposed as tools for OpenAI Agents SDK.
+Agent tools — database query functions available for LLM tool calling.
 
 These tools allow agents to query real banking data from PostgreSQL,
 making their recommendations data-driven rather than hallucinated.
+
+Architecture:
+- TOOL_DEFINITIONS: OpenAI-compatible JSON schemas sent to the LLM
+- execute_tool(): Dispatcher that runs the right function when the LLM calls a tool
+- Each function queries the database and returns JSON for the LLM to use
 """
 
 import json
-from agents import function_tool
 from app.database import async_session
 from app.utils.logger import logger
 
 
-@function_tool
+# ─── OpenAI-Compatible Tool Definitions ──────────────────────────────
+# These are sent to the LLM so it knows what tools are available.
+# Format follows the OpenAI function calling spec exactly.
+
+TOOL_DEFINITIONS = [
+    {
+        "type": "function",
+        "function": {
+            "name": "query_banks",
+            "description": "Query Pakistani banks from the database. Use this when the user asks about banks, bank comparisons, or needs bank recommendations. Returns real data including ratings, features, and branch counts.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "banking_type": {
+                        "type": "string",
+                        "description": "Filter by type: 'conventional', 'islamic', 'microfinance', 'digital'. Omit for all types.",
+                        "enum": ["conventional", "islamic", "microfinance", "digital"],
+                    },
+                    "has_islamic_banking": {
+                        "type": "boolean",
+                        "description": "If true, only return banks with Islamic banking services.",
+                    },
+                    "min_rating": {
+                        "type": "number",
+                        "description": "Minimum overall rating (1.0 - 5.0). Omit for no minimum.",
+                    },
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_products",
+            "description": "Get banking products (accounts) from the database. Use this when the user asks about account types, savings accounts, current accounts, student accounts, etc.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "category": {
+                        "type": "string",
+                        "description": "Product category filter.",
+                        "enum": [
+                            "savings_account", "current_account", "student_account",
+                            "salary_account", "business_account", "islamic_account",
+                            "digital_account", "freelancer_account",
+                        ],
+                    },
+                    "bank_name": {
+                        "type": "string",
+                        "description": "Filter by bank name (partial match). Example: 'HBL', 'Meezan'.",
+                    },
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_cards",
+            "description": "Get credit/debit card products from the database. Use this when the user asks about cards, cashback, rewards, or card comparisons.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "card_type": {
+                        "type": "string",
+                        "description": "Filter by card type.",
+                        "enum": ["credit", "debit", "prepaid"],
+                    },
+                    "bank_name": {
+                        "type": "string",
+                        "description": "Filter by bank name (partial match).",
+                    },
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_loans",
+            "description": "Get loan and financing products from the database. Use this when the user asks about loans, mortgages, car financing, personal loans, etc.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "loan_type": {
+                        "type": "string",
+                        "description": "Filter by loan type.",
+                        "enum": [
+                            "home_loan", "car_financing", "personal_loan",
+                            "business_loan", "sme_loan", "education_loan",
+                            "islamic_financing",
+                        ],
+                    },
+                    "bank_name": {
+                        "type": "string",
+                        "description": "Filter by bank name (partial match).",
+                    },
+                    "max_income_required": {
+                        "type": "number",
+                        "description": "Filter loans where minimum income requirement is at or below this value (in PKR). Use 0 for no filter.",
+                    },
+                },
+                "required": [],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "compare_banks",
+            "description": "Compare two or more banks side by side. Use this when the user explicitly wants to compare specific banks.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "bank_names": {
+                        "type": "string",
+                        "description": "Comma-separated bank names to compare. Example: 'HBL, Meezan Bank, UBL'",
+                    },
+                },
+                "required": ["bank_names"],
+            },
+        },
+    },
+]
+
+
+# ─── Tool Executor (Dispatcher) ──────────────────────────────────────
+
+async def execute_tool(tool_name: str, arguments: dict) -> str:
+    """
+    Execute a tool by name and return the result as a JSON string.
+    
+    This is called by the orchestrator when the LLM decides to use a tool.
+    """
+    try:
+        if tool_name == "query_banks":
+            return await query_banks(**arguments)
+        elif tool_name == "get_products":
+            return await get_products(**arguments)
+        elif tool_name == "get_cards":
+            return await get_cards(**arguments)
+        elif tool_name == "get_loans":
+            return await get_loans(**arguments)
+        elif tool_name == "compare_banks":
+            return await compare_banks(**arguments)
+        else:
+            return json.dumps({"error": f"Unknown tool: {tool_name}"})
+    except Exception as e:
+        logger.error(f"Tool execution error ({tool_name}): {e}")
+        return json.dumps({"error": f"Failed to query database: {str(e)}"})
+
+
+# ─── Tool Functions ──────────────────────────────────────────────────
+
+
 async def query_banks(
     banking_type: str = "",
     has_islamic_banking: bool = False,
@@ -19,14 +180,7 @@ async def query_banks(
 ) -> str:
     """
     Query Pakistani banks from the database with optional filters.
-
-    Args:
-        banking_type: Filter by type — 'conventional', 'islamic', 'microfinance', 'digital'. Leave empty for all.
-        has_islamic_banking: If true, only return banks with Islamic banking services.
-        min_rating: Minimum overall rating (1.0 - 5.0).
-
-    Returns:
-        JSON string with list of matching banks and their details.
+    Returns JSON string with list of matching banks and their details.
     """
     from sqlalchemy import select
     from app.models.bank import Bank
@@ -41,7 +195,7 @@ async def query_banks(
         if min_rating > 0:
             query = query.where(Bank.overall_rating >= min_rating)
 
-        query = query.order_by(Bank.overall_rating.desc())
+        query = query.order_by(Bank.overall_rating.desc()).limit(10)
         result = await db.execute(query)
         banks = result.scalars().all()
 
@@ -64,23 +218,17 @@ async def query_banks(
                 "description": b.description,
             })
 
+        logger.info(f"query_banks returned {len(bank_list)} results")
         return json.dumps(bank_list, indent=2)
 
 
-@function_tool
 async def get_products(
     category: str = "",
     bank_name: str = "",
 ) -> str:
     """
     Get banking products (accounts) from the database.
-
-    Args:
-        category: Product category — 'savings_account', 'current_account', 'student_account', 'salary_account', 'business_account', 'islamic_account', 'digital_account', 'freelancer_account'. Leave empty for all.
-        bank_name: Filter by bank name (partial match). Leave empty for all banks.
-
-    Returns:
-        JSON string with matching products and their features, eligibility, and fees.
+    Returns JSON string with matching products and their features.
     """
     from sqlalchemy import select
     from app.models.product import Product
@@ -94,6 +242,7 @@ async def get_products(
         if bank_name:
             query = query.where(Bank.name.ilike(f"%{bank_name}%"))
 
+        query = query.limit(15)
         result = await db.execute(query)
         rows = result.all()
 
@@ -111,23 +260,17 @@ async def get_products(
                 "profit_rate": product.profit_rate,
             })
 
+        logger.info(f"get_products returned {len(products)} results")
         return json.dumps(products, indent=2)
 
 
-@function_tool
 async def get_cards(
     card_type: str = "",
     bank_name: str = "",
 ) -> str:
     """
     Get credit/debit cards from the database.
-
-    Args:
-        card_type: Filter by type — 'credit', 'debit', 'prepaid'. Leave empty for all.
-        bank_name: Filter by bank name (partial match). Leave empty for all.
-
-    Returns:
-        JSON string with matching cards and their features, fees, and benefits.
+    Returns JSON string with matching cards and their features.
     """
     from sqlalchemy import select
     from app.models.product import Card
@@ -141,6 +284,7 @@ async def get_cards(
         if bank_name:
             query = query.where(Bank.name.ilike(f"%{bank_name}%"))
 
+        query = query.limit(15)
         result = await db.execute(query)
         rows = result.all()
 
@@ -159,10 +303,10 @@ async def get_cards(
                 "benefits": card.benefits,
             })
 
+        logger.info(f"get_cards returned {len(cards)} results")
         return json.dumps(cards, indent=2)
 
 
-@function_tool
 async def get_loans(
     loan_type: str = "",
     bank_name: str = "",
@@ -170,14 +314,7 @@ async def get_loans(
 ) -> str:
     """
     Get loan/financing products from the database.
-
-    Args:
-        loan_type: Filter by type — 'home_loan', 'car_financing', 'personal_loan', 'business_loan', 'sme_loan', 'education_loan', 'islamic_financing'. Leave empty for all.
-        bank_name: Filter by bank name (partial match). Leave empty for all.
-        max_income_required: Filter loans where minimum income requirement is at or below this value (in PKR). Use 0 for no filter.
-
-    Returns:
-        JSON string with matching loans and their rates, tenure, eligibility, and features.
+    Returns JSON string with matching loans and their details.
     """
     from sqlalchemy import select
     from app.models.product import Loan
@@ -195,6 +332,7 @@ async def get_loans(
                 (Loan.min_income == None) | (Loan.min_income <= max_income_required)
             )
 
+        query = query.limit(15)
         result = await db.execute(query)
         rows = result.all()
 
@@ -213,19 +351,14 @@ async def get_loans(
                 "eligibility": loan.eligibility,
             })
 
+        logger.info(f"get_loans returned {len(loans)} results")
         return json.dumps(loans, indent=2)
 
 
-@function_tool
 async def compare_banks(bank_names: str) -> str:
     """
     Compare two or more banks side by side.
-
-    Args:
-        bank_names: Comma-separated bank names to compare. Example: "HBL, Meezan Bank, UBL"
-
-    Returns:
-        JSON string with a detailed comparison of the requested banks.
+    Returns JSON string with detailed comparison data.
     """
     from sqlalchemy import select
     from app.models.bank import Bank
@@ -253,4 +386,5 @@ async def compare_banks(bank_names: str) -> str:
                     "description": bank.description,
                 })
 
+        logger.info(f"compare_banks returned {len(banks)} results for: {bank_names}")
         return json.dumps(banks, indent=2)

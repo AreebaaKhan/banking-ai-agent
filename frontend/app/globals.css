@@ -11,43 +11,54 @@
 /* ─── Design Tokens ────────────────────────────────────────────── */
 
 :root {
-  /* Colors — Dark Theme */
-  --color-bg-primary: #060B18;
-  --color-bg-secondary: #0D1425;
-  --color-bg-tertiary: #141C32;
-  --color-bg-elevated: #1A2342;
-  --color-bg-hover: #1E2A4A;
+  /* Colors — Dark Theme (UI/UX Pro Max: Financial Dashboard + Cinematic Dark) */
+  --color-bg-primary: #020617; /* Very deep navy */
+  --color-bg-secondary: #0A0A0F;
+  --color-bg-tertiary: #0E1223; /* Card bg */
+  --color-bg-elevated: #1A1E2F;
+  --color-bg-hover: #1E293B;
 
   /* Accent Colors */
-  --color-accent-blue: #3B82F6;
-  --color-accent-blue-hover: #2563EB;
-  --color-accent-blue-subtle: rgba(59, 130, 246, 0.12);
-  --color-accent-gold: #D4A853;
-  --color-accent-gold-subtle: rgba(212, 168, 83, 0.12);
-  --color-accent-green: #10B981;
-  --color-accent-green-subtle: rgba(16, 185, 129, 0.12);
-  --color-accent-red: #EF4444;
+  --color-accent-blue: #4A8BF5;
+  --color-accent-blue-hover: #3575DB;
+  --color-accent-blue-subtle: rgba(74, 139, 245, 0.12);
+  --color-accent-gold: #A16207; /* UI Pro Max premium gold */
+  --color-accent-gold-subtle: rgba(161, 98, 7, 0.12);
+  --color-accent-green: #22C55E; /* UI Pro Max positive indicator */
+  --color-accent-green-subtle: rgba(34, 197, 94, 0.12);
+  --color-accent-red: #EF4444; /* UI Pro Max destructive */
   --color-accent-red-subtle: rgba(239, 68, 68, 0.12);
   --color-accent-purple: #8B5CF6;
   --color-accent-purple-subtle: rgba(139, 92, 246, 0.12);
 
   /* Text */
-  --color-text-primary: #F1F5F9;
+  --color-text-primary: #F8FAFC;
   --color-text-secondary: #94A3B8;
   --color-text-tertiary: #64748B;
-  --color-text-inverse: #0F172A;
+  --color-text-inverse: #020617;
 
   /* Borders & Surfaces */
-  --color-border: rgba(255, 255, 255, 0.06);
-  --color-border-hover: rgba(255, 255, 255, 0.12);
-  --color-glass: rgba(13, 20, 37, 0.75);
-  --color-glass-light: rgba(26, 35, 66, 0.6);
-  --color-overlay: rgba(0, 0, 0, 0.5);
+  --color-border: rgba(255, 255, 255, 0.08); /* UI Pro Max exact value */
+  --color-border-hover: rgba(255, 255, 255, 0.15);
+  --color-glass: rgba(14, 18, 35, 0.75);
+  --color-glass-light: rgba(26, 30, 47, 0.6);
+  --color-overlay: rgba(0, 0, 0, 0.6);
+
+  /* Semantic Tokens (UI/UX Pro Max: color-semantic) */
+  --color-surface: #0a0a0f;
+  --color-on-surface: #c0d0e0;
+  --color-surface-card: rgba(14, 18, 35, 0.6);
+  --color-primary: #4A8BF5;
+  --color-primary-hover: #3575DB;
+  --color-error: #EF4444;
+  --color-success: #22C55E;
+  --color-warning: #A16207;
 
   /* Gradients */
-  --gradient-blue: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
-  --gradient-gold: linear-gradient(135deg, #D4A853 0%, #B8860B 100%);
-  --gradient-card: linear-gradient(145deg, rgba(26,35,66,0.5) 0%, rgba(13,20,37,0.8) 100%);
+  --gradient-blue: linear-gradient(135deg, #4A8BF5 0%, #2A5FC7 100%);
+  --gradient-gold: linear-gradient(135deg, #A16207 0%, #713F12 100%);
+  --gradient-card: linear-gradient(180deg, rgba(26,30,47,0.5) 0%, rgba(14,18,35,0.8) 100%);
+  --gradient-bg: linear-gradient(180deg, #0a0a0f 0%, #020617 100%); /* Cinematic Background */
   --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.15) 0%, transparent 60%);
   --gradient-hero: radial-gradient(ellipse at 30% 20%, rgba(59,130,246,0.08) 0%, transparent 50%),
                    radial-gradient(ellipse at 70% 80%, rgba(139,92,246,0.06) 0%, transparent 50%);
@@ -84,17 +95,19 @@
   --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+  /* Shadows — Strict 3-tier elevation scale (UI/UX Pro Max: elevation-consistent) */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);          /* Flat: buttons, chips */
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);          /* Cards: stat cards, panels */
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);          /* Modals: dialogs, popovers */
   --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
   --shadow-glow-gold: 0 0 20px rgba(212, 168, 83, 0.3);
 
-  /* Transitions */
-  --transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-base: 250ms cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-slow: 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* Transitions — Spring-physics easing (UI/UX Pro Max: spring-physics) */
+  --transition-fast: 150ms cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-base: 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-slow: 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);  /* Overshoot spring for enter */
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);            /* Faster exit (exit < enter) */
 
   /* Layout */
   --sidebar-width: 300px;
@@ -121,7 +134,7 @@ html {
 
 body {
   font-family: var(--font-family);
-  background-color: var(--color-bg-primary);
+  background: var(--gradient-bg);
   color: var(--color-text-primary);
   line-height: 1.6;
   min-height: 100vh;
@@ -307,6 +320,26 @@ input, textarea, select {
   margin-bottom: var(--space-2);
 }
 
+/* Inline field errors */
+.field-error {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--color-accent-red);
+  margin-top: var(--space-1);
+  padding-left: var(--space-1);
+  animation: fadeIn var(--transition-fast) ease-out;
+}
+
+.input-error {
+  border-color: var(--color-accent-red) !important;
+  box-shadow: 0 0 0 2px var(--color-accent-red-subtle) !important;
+}
+
+.input-error:focus {
+  border-color: var(--color-accent-red) !important;
+  box-shadow: 0 0 0 3px var(--color-accent-red-subtle) !important;
+}
+
 .text-gradient {
   background: linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-purple));
   -webkit-background-clip: text;
@@ -368,6 +401,19 @@ input, textarea, select {
   to { transform: rotate(360deg); }
 }
 
+/* Stagger entrance — used by dashboard cards, sidebar items, quick replies */
+@keyframes staggerFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Scale feedback for buttons/cards on press (UI/UX Pro Max: scale-feedback) */
+@keyframes pressScale {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
 .animate-fade-in {
   animation: fadeIn var(--transition-base) ease-out;
 }
@@ -384,7 +430,20 @@ input, textarea, select {
   animation: slideInRight var(--transition-base) ease-out;
 }
 
-/* Reduced motion */
+/* Stagger entrance utility — apply with inline --stagger-delay */
+.stagger-item {
+  opacity: 0;
+  animation: staggerFadeIn 0.4s var(--ease-spring) forwards;
+  animation-delay: var(--stagger-delay, 0ms);
+}
+
+/* Tabular nums for financial data (UI/UX Pro Max: number-tabular) */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Reduced motion (UI/UX Pro Max: reduced-motion) */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -392,6 +451,11 @@ input, textarea, select {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .stagger-item {
+    opacity: 1 !important;
+    animation: none !important;
   }
 }
 

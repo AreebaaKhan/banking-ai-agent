@@ -13,19 +13,47 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({ email: "", password: "" });
+
+  const clearError = (field) => {
+    setErrors((prev) => ({ ...prev, [field]: "" }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      toast.error("Please fill in all fields");
+    const newErrors = { email: "", password: "" };
+    let hasError = false;
+
+    if (!email) {
+      newErrors.email = "Email address is required";
+      hasError = true;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Please enter a valid email address";
+      hasError = true;
+    }
+    if (!password) {
+      newErrors.password = "Password is required";
+      hasError = true;
+    }
+
+    if (hasError) {
+      setErrors(newErrors);
       return;
     }
+
     setLoading(true);
     try {
       await login(email, password);
       toast.success("Welcome back!");
     } catch (err) {
-      toast.error(err.message || "Login failed");
+      const msg = err.message || "Login failed";
+      if (msg.toLowerCase().includes("password") || msg.toLowerCase().includes("credentials") || msg.toLowerCase().includes("invalid")) {
+        setErrors({ email: "", password: "Incorrect email or password" });
+      } else if (msg.toLowerCase().includes("not found") || msg.toLowerCase().includes("user")) {
+        setErrors({ email: "No account found with this email", password: "" });
+      } else {
+        toast.error(msg);
+      }
     } finally {
       setLoading(false);
     }
@@ -33,51 +61,60 @@ export default function LoginPage() {
 
   return (
     <main className={styles.authPage}>
+      {/* Background layers */}
+      <div className={styles.authBg}>
+        <div className={styles.authBgImage} />
+        <div className={styles.authBgOverlay} />
+      </div>
       <div className={styles.glowOrb1} />
       <div className={styles.glowOrb2} />
 
+      {/* Glass card */}
       <div className={styles.authCard}>
         <div className={styles.logoSection}>
-          <div className={styles.logoIcon}>
-            <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
-              <rect width="48" height="48" rx="12" fill="url(#lg)" />
-              <path d="M14 28C14 22.477 18.477 18 24 18C29.523 18 34 22.477 34 28" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-              <circle cx="24" cy="28" r="3" fill="white"/>
-              <path d="M18 34H30" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-              <defs><linearGradient id="lg" x1="0" y1="0" x2="48" y2="48"><stop stopColor="#3B82F6"/><stop offset="1" stopColor="#1D4ED8"/></linearGradient></defs>
-            </svg>
+          {/* Brain icon + brand */}
+          <div className={styles.brandRow} style={{ marginTop: '30px', marginBottom: '8px' }}>
+            <div className={styles.brandIcon}>
+              <img src="/images/brand-icon.png" alt="AI Banking Advisor" width={30} height={30} style={{ borderRadius: '8px', objectFit: 'cover' }} />
+            </div>
+            <span className={styles.brandName}>AI Banking Advisor</span>
           </div>
           <h1 className={styles.authTitle}>Welcome Back</h1>
           <p className={styles.authSubtitle}>Sign in to your AI Banking Advisor</p>
         </div>
 
-        <form onSubmit={handleSubmit} className={styles.authForm}>
+        <form onSubmit={handleSubmit} className={styles.authForm} noValidate>
+          {/* Email */}
           <div className={styles.fieldGroup}>
-            <label className="label" htmlFor="email">Email Address</label>
+            <label htmlFor="login-email">Email Address</label>
             <input
-              id="email"
+              id="login-email"
               type="email"
-              className="input-field"
+              className={errors.email ? styles.inputError : ""}
               placeholder="you@example.com"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); clearError("email"); }}
               autoComplete="email"
-              required
+              aria-invalid={Boolean(errors.email)}
+              aria-describedby={errors.email ? "login-email-error" : undefined}
             />
+            {errors.email && <span id="login-email-error" className={styles.fieldError}>{errors.email}</span>}
           </div>
 
+          {/* Password */}
           <div className={styles.fieldGroup}>
-            <label className="label" htmlFor="password">Password</label>
+            <label htmlFor="login-password">Password</label>
             <div className={styles.passwordWrapper}>
               <input
-                id="password"
+                id="login-password"
                 type={showPassword ? "text" : "password"}
-                className="input-field"
+                className={errors.password ? styles.inputError : ""}
                 placeholder="Enter your password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => { setPassword(e.target.value); clearError("password"); }}
                 autoComplete="current-password"
-                required
+                aria-invalid={Boolean(errors.password)}
+                aria-describedby={errors.password ? "login-password-error" : undefined}
               />
               <button
                 type="button"
@@ -92,14 +129,12 @@ export default function LoginPage() {
                 )}
               </button>
             </div>
+            {errors.password && <span id="login-password-error" className={styles.fieldError}>{errors.password}</span>}
           </div>
 
-          <button type="submit" className={`btn-primary ${styles.submitBtn}`} disabled={loading}>
-            {loading ? (
-              <span className={styles.spinner} />
-            ) : (
-              "Sign In"
-            )}
+          {/* Submit */}
+          <button type="submit" className={styles.submitBtn} disabled={loading}>
+            {loading ? <span className={styles.spinner} /> : "Sign In"}
           </button>
         </form>
 

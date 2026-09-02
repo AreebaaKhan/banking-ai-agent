@@ -1,79 +1,167 @@
-/* Auth pages shared styles — Login & Signup */
+
+/* ==========================================================
+ * AUTH PAGES — Login & Signup
+ * Target: Pakistani banking building background (top),
+ * dark navy gradient (bottom), centered glassmorphism card.
+ * Matching the reference screenshots exactly.
+ * ========================================================== */
+
+/* ─── Full Page ───────────────────────────────────────────────── */
 
 .authPage {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-4);
+  padding: 32px 24px;
   position: relative;
   overflow: hidden;
-  background: var(--gradient-hero);
+  background: var(--color-bg-primary); /* #020617 */
 }
 
+/* ─── Background Layers ──────────────────────────────────────── */
+
+.authBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+/* Background image: banking building visible at the top */
+.authBgImage {
+  position: absolute;
+  inset: 0;
+  background-image: url('/images/banking-bg.png');
+  /* Fit the full State Bank illustration, including its quiet lower area,
+     across the viewport like the supplied reference. */
+  background-size: 100% 100%;
+  background-position: center top;
+  background-repeat: no-repeat;
+  opacity: 1;
+  background-color: #07152d;
+}
+
+/* Dark gradient overlay: fades to navy at bottom */
+.authBgOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(4, 17, 39, 0.1) 0%,
+    rgba(3, 12, 29, 0.2) 46%,
+    rgba(2, 8, 22, 0.5) 100%
+  );
+}
+
+/* Subtle glow orbs for depth */
 .glowOrb1 {
   position: absolute;
-  width: 400px;
-  height: 400px;
+  width: 600px;
+  height: 600px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-  top: -100px;
-  right: -100px;
+  background: radial-gradient(circle, rgba(74, 139, 245, 0.06) 0%, transparent 70%);
+  top: -200px;
+  right: -150px;
   pointer-events: none;
-  animation: float 8s ease-in-out infinite;
+  z-index: 1;
 }
 
 .glowOrb2 {
   position: absolute;
-  width: 350px;
-  height: 350px;
+  width: 500px;
+  height: 500px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.08) 0%, transparent 70%);
-  bottom: -80px;
-  left: -80px;
+  background: radial-gradient(circle, rgba(100, 120, 180, 0.04) 0%, transparent 70%);
+  bottom: -150px;
+  left: -150px;
   pointer-events: none;
-  animation: float 10s ease-in-out infinite reverse;
+  z-index: 1;
 }
 
+/* ─── Glass Card ─────────────────────────────────────────────── */
+
 .authCard {
+  position: relative;
+  top: 10px;
+  z-index: 2;
   width: 100%;
-  max-width: 420px;
-  background: var(--color-glass);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  padding: var(--space-10) var(--space-8);
-  animation: fadeInUp 0.5s ease-out;
+  max-width: 330px;
+
+  /* Heavy Glassmorphism */
+  background: rgba(20, 28, 44, 0.62);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  /* Subtle white border */
+  border: 1px solid rgba(206, 217, 233, 0.24);
+  border-radius: 20px;
+  padding: 26px 26px 24px;
+
+  /* Large drop shadow */
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+  animation: cardFadeIn 0.6s var(--ease-spring);
 }
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ─── Branding ───────────────────────────────────────────────── */
 
 .logoSection {
   text-align: center;
-  margin-bottom: var(--space-8);
+  margin-bottom: 16px;
 }
 
-.logoIcon {
+.brandRow {
   display: flex;
+  align-items: center;
   justify-content: center;
-  margin-bottom: var(--space-4);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.brandIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brandName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #f5f8fc;
+  letter-spacing: 0.02em;
 }
 
 .authTitle {
-  font-size: var(--font-size-2xl);
+  font-size: 23px;
   font-weight: 700;
   letter-spacing: -0.02em;
-  margin-bottom: var(--space-2);
+  margin-bottom: 3px;
+  color: #f0f4f8;
 }
 
 .authSubtitle {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-base);
+  color: #d1d7e1;
+  font-size: 12px;
+  letter-spacing: 0.01em;
 }
+
+/* ─── Form ────────────────────────────────────────────────────── */
 
 .authForm {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: 11px;
 }
 
 .fieldGroup {
@@ -81,82 +169,211 @@
   flex-direction: column;
 }
 
+.fieldGroup label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: #eef2f7;
+  margin-bottom: 6px;
+  letter-spacing: 0.02em;
+}
+
+/* Override global input-field for auth context */
+.fieldGroup input,
+.fieldGroup select {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 14px;
+  background: rgba(16, 24, 40, 0.58);
+  border: 1px solid rgba(204, 216, 233, 0.22);
+  border-radius: 11px;
+  color: #f8fafc;
+  font-size: 12px;
+  font-family: inherit;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.fieldGroup input:-webkit-autofill,
+.fieldGroup input:-webkit-autofill:hover,
+.fieldGroup input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f8fafc;
+  -webkit-box-shadow: 0 0 0 1000px rgba(16, 24, 40, 0.85) inset;
+  box-shadow: 0 0 0 1000px rgba(16, 24, 40, 0.85) inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+.fieldGroup input::placeholder {
+  color: #aeb8c8;
+}
+
+.fieldGroup input:focus,
+.fieldGroup select:focus {
+  border-color: rgba(139, 181, 230, 0.6);
+  box-shadow: 0 0 0 3px rgba(113, 159, 213, 0.14);
+}
+
+.fieldGroup input:hover:not(:focus),
+.fieldGroup select:hover:not(:focus) {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Error state on inputs */
+.inputError {
+  border-color: rgba(239, 68, 68, 0.6) !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.12) !important;
+}
+
+.fieldError {
+  display: block;
+  font-size: 12px;
+  color: #ff9a9a;
+  margin-top: 6px;
+  padding-left: 2px;
+  animation: errorSlideIn 0.25s ease-out;
+}
+
+@keyframes errorSlideIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Password field */
 .passwordWrapper {
   position: relative;
 }
 
-.passwordWrapper .input-field {
-  padding-right: 44px;
+.passwordWrapper input {
+  padding-right: 40px;
 }
 
 .eyeBtn {
   position: absolute;
-  right: 12px;
+  right: 9px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--color-text-tertiary);
-  transition: color var(--transition-fast);
+  color: #5a6a82;
+  transition: color 0.15s ease;
   padding: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  background: none;
+  border: none;
 }
 
 .eyeBtn:hover {
-  color: var(--color-text-secondary);
+  color: #8fa3bf;
 }
 
+/* ─── Submit Button ───────────────────────────────────────────── */
+
+/* Soft, muted blue */
 .submitBtn {
   width: 100%;
-  padding: var(--space-3) var(--space-6);
-  margin-top: var(--space-2);
-  font-size: var(--font-size-md);
-  min-height: 48px;
+  padding: 10px 20px;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  min-height: 40px;
+  border-radius: 11px;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  border: none;
+  color: #ffffff;
+  background: linear-gradient(135deg, #6c9cda 0%, #4c78b5 100%);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.2), 0 4px 6px -4px rgba(30, 58, 138, 0.2);
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #79a9e7 0%, #5685c3 100%);
+  box-shadow: 0 14px 24px rgba(45, 84, 142, 0.3);
+  transform: translateY(-1px);
+}
+
+.submitBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 .spinner {
   display: inline-block;
   width: 20px;
   height: 20px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border: 2px solid rgba(26, 35, 64, 0.3);
+  border-top-color: #1a2340;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Switch Link ─────────────────────────────────────────────── */
+
 .switchLink {
   text-align: center;
-  margin-top: var(--space-6);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  margin-top: 12px;
+  font-size: 12px;
+  color: #e0e5ec;
 }
 
 .switchLink a {
-  color: var(--color-accent-blue);
+  color: #88aee1;
   font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s ease;
 }
 
 .switchLink a:hover {
+  color: #7bb4ff;
   text-decoration: underline;
 }
 
-/* Select styling */
-.authForm select.input-field {
+/* ─── Select Styling ──────────────────────────────────────────── */
+
+.fieldGroup select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2394A3B8' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236a7a94' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
   padding-right: 36px;
+  cursor: pointer;
 }
 
-.authForm select.input-field option {
-  background: var(--color-bg-secondary);
-  color: var(--color-text-primary);
+.fieldGroup select option {
+  background: #0d1425;
+  color: #e2e8f0;
 }
+
+/* ─── Responsive ──────────────────────────────────────────────── */
 
 @media (max-width: 480px) {
   .authCard {
-    padding: var(--space-6) var(--space-4);
-    border-radius: var(--radius-lg);
+    top: 0;
+    padding: 30px 22px;
+    border-radius: 20px;
+    max-width: 100%;
+    margin: 0 8px;
+  }
+
+  .authTitle {
+    font-size: 28px;
+  }
+
+  .authSubtitle {
+    font-size: 14px;
   }
 }

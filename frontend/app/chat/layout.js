@@ -61,7 +61,6 @@ export default function ChatLayout({ children }) {
     c.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // Group by date
   const grouped = groupByDate(filteredConversations);
 
   if (authLoading) {
@@ -79,28 +78,19 @@ export default function ChatLayout({ children }) {
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
         <div className={styles.sidebarHeader}>
-          <div className={styles.logoRow}>
-            <svg width="28" height="28" viewBox="0 0 48 48" fill="none">
-              <rect width="48" height="48" rx="12" fill="url(#slg)" />
-              <path d="M14 28C14 22.477 18.477 18 24 18C29.523 18 34 22.477 34 28" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
-              <circle cx="24" cy="28" r="3" fill="white"/>
-              <defs><linearGradient id="slg" x1="0" y1="0" x2="48" y2="48"><stop stopColor="#3B82F6"/><stop offset="1" stopColor="#1D4ED8"/></linearGradient></defs>
-            </svg>
-            <span className={styles.logoText}>Banking Advisor</span>
-          </div>
           <button
             className={styles.newChatBtn}
             onClick={handleNewChat}
             title="New conversation"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             New Chat
           </button>
         </div>
 
         {/* Search */}
         <div className={styles.searchBox}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input
             type="text"
             placeholder="Search conversations..."
@@ -112,13 +102,15 @@ export default function ChatLayout({ children }) {
 
         {/* Conversation List */}
         <div className={styles.convList}>
+          <div className={styles.convListLabel}>Recent Conversations</div>
+
           {loadingConvs ? (
             Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className={`skeleton ${styles.convSkeleton}`} />
             ))
           ) : filteredConversations.length === 0 ? (
             <div className={styles.emptyState}>
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4a5a72" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <p>No conversations yet</p>
               <p className={styles.emptyHint}>Start a new chat to get banking advice</p>
             </div>
@@ -143,7 +135,7 @@ export default function ChatLayout({ children }) {
                         onClick={(e) => handleDeleteConv(conv.id, e)}
                         title="Delete conversation"
                       >
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                       </button>
                     </div>
                   </div>
@@ -156,11 +148,11 @@ export default function ChatLayout({ children }) {
         {/* Sidebar Footer */}
         <div className={styles.sidebarFooter}>
           <button onClick={() => router.push("/dashboard")} className={styles.footerBtn}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
             Dashboard
           </button>
           <button onClick={logout} className={styles.footerBtn}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Logout
           </button>
         </div>
@@ -171,7 +163,7 @@ export default function ChatLayout({ children }) {
         className={styles.mobileToggle}
         onClick={() => setSidebarOpen(!sidebarOpen)}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
 
       {/* Overlay for mobile */}

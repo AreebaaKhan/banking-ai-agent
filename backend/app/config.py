@@ -26,7 +26,8 @@ class Settings(BaseSettings):
 
     # --- Groq LLM ---
     GROQ_API_KEY: str
-    GROQ_MODEL: str = "openai/gpt-oss-120b"
+    GROQ_MODEL: str = "qwen/qwen3.8-27b"
+    GROQ_TRIAGE_MODEL: str = "openai/gpt-oss-20b"
 
     @property
     def cors_origins_list(self) -> list[str]:
