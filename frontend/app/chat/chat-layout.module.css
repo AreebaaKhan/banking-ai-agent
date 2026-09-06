@@ -34,18 +34,57 @@
 /* ─── Sidebar ─────────────────────────────────────────────────── */
 
 .sidebar {
-  width: 240px;
-  min-width: 240px;
+  width: 280px;
+  min-width: 280px;
   height: 100vh;
   background: #0a1020;
   border-right: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, margin-left 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.sidebar:not(.sidebarOpen) {
+  transform: translateX(-100%);
+  margin-right: -280px;
 }
 
 .sidebarHeader {
   padding: 16px 14px 12px;
+}
+
+.sidebarTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 0 4px 14px;
+}
+
+.sidebarBrand {
+  color: #dbeafe;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.sidebarCloseBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: #8495b0;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.sidebarCloseBtn:hover {
+  color: #e5efff;
+  background: rgba(90, 156, 245, 0.12);
 }
 
 .logoRow {
@@ -94,7 +133,7 @@
   border: none;
   outline: none;
   background: transparent;
-  font-size: 12px;
+  font-size: 15px;
   color: #e2e8f0;
   font-family: inherit;
 }
@@ -111,7 +150,7 @@
 }
 
 .convListLabel {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   color: #5a6a82;
   text-transform: uppercase;
@@ -130,7 +169,7 @@
 }
 
 .dateLabel {
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 600;
   color: #4a5a72;
   text-transform: uppercase;
@@ -162,7 +201,7 @@
 }
 
 .convTitle {
-  font-size: 13px;
+  font-size: 16px;
   color: #c0d0e0;
   white-space: nowrap;
   overflow: hidden;
@@ -264,7 +303,7 @@
 /* ─── Mobile ──────────────────────────────────────────────────── */
 
 .mobileToggle {
-  display: none;
+  display: flex;
   position: fixed;
   top: 12px;
   left: 12px;
@@ -275,6 +314,10 @@
   border-radius: 6px;
   color: #c0d0e0;
   cursor: pointer;
+}
+
+.sidebarOpen ~ .mobileToggle {
+  left: 252px;
 }
 
 .overlay {
@@ -288,15 +331,20 @@
     top: 0;
     z-index: 100;
     transform: translateX(-100%);
+    margin-right: 0;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+  }
+
+  .sidebar:not(.sidebarOpen) {
+    margin-right: 0;
   }
 
   .sidebarOpen {
     transform: translateX(0);
   }
 
-  .mobileToggle {
-    display: flex;
+  .sidebarOpen ~ .mobileToggle {
+    left: 252px;
   }
 
   .overlay {

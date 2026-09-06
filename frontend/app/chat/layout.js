@@ -78,6 +78,17 @@ export default function ChatLayout({ children }) {
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
         <div className={styles.sidebarHeader}>
+          <div className={styles.sidebarTopRow}>
+            <span className={styles.sidebarBrand}>AI Banking Advisor</span>
+            <button
+              className={styles.sidebarCloseBtn}
+              onClick={() => setSidebarOpen(false)}
+              title="Collapse sidebar"
+              aria-label="Collapse sidebar"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+          </div>
           <button
             className={styles.newChatBtn}
             onClick={handleNewChat}
@@ -162,8 +173,10 @@ export default function ChatLayout({ children }) {
       <button
         className={styles.mobileToggle}
         onClick={() => setSidebarOpen(!sidebarOpen)}
+        title={sidebarOpen ? "Collapse sidebar" : "Open sidebar"}
+        aria-label={sidebarOpen ? "Collapse sidebar" : "Open sidebar"}
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d={sidebarOpen ? "M15 18l-6-6 6-6" : "M9 18l6-6-6-6"}/></svg>
       </button>
 
       {/* Overlay for mobile */}

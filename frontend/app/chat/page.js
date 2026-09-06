@@ -140,14 +140,6 @@ export default function NewChatPage() {
 
           <div className={styles.welcomeScreen}>
             <div className={styles.welcomeGlow} />
-            <div className={styles.welcomeIcon}>
-              <svg width="48" height="48" viewBox="0 0 40 40" fill="none">
-                <circle cx="20" cy="20" r="18" fill="rgba(74,139,245,0.12)" stroke="#5a9cf5" strokeWidth="1"/>
-                <path d="M20 8c-5 0-9 4-9 9 0 2 .7 3.8 1.8 5.2.4.5.7 1 .7 1.7V27c0 .8.6 1.4 1.4 1.4h10.2c.8 0 1.4-.6 1.4-1.4v-3.1c0-.7.3-1.2.7-1.7C28.3 20.8 29 19 29 17c0-5-4-9-9-9z" fill="#4a8bf5"/>
-                <circle cx="17" cy="15.5" r="1.2" fill="white" opacity="0.9"/>
-                <circle cx="23" cy="15.5" r="1.2" fill="white" opacity="0.9"/>
-              </svg>
-            </div>
             <h1 className={styles.welcomeTitle}>
               Hello, <span style={{ color: "#5a9cf5" }}>{user?.full_name?.split(" ")[0] || "there"}</span>
             </h1>
@@ -216,7 +208,7 @@ export default function NewChatPage() {
         {/* Messages */}
         <div className={styles.messagesArea}>
           {messages.map((msg) => (
-            <MessageBubble key={msg.id} message={msg} onSend={handleSend} streaming={streaming} />
+            <MessageBubble key={msg.id} message={msg} onSend={handleSend} streaming={streaming} userName={user?.full_name}/>
           ))}
           {streaming && (
             <div className={styles.typingRow}>
@@ -298,7 +290,7 @@ function detectQuickReplies(content) {
 }
 
 
-function MessageBubble({ message, onSend, streaming }) {
+function MessageBubble({ message, onSend, streaming, userName }) {
   const isUser = message.role === "user";
   const [copied, setCopied] = useState(false);
   const [quickRepliesUsed, setQuickRepliesUsed] = useState(false);
@@ -323,7 +315,7 @@ function MessageBubble({ message, onSend, streaming }) {
     <div className={`${styles.messageRow} ${isUser ? styles.userRow : styles.assistantRow}`}>
       <div className={`${styles.avatar} ${isUser ? styles.userAvatar : styles.aiAvatar}`}>
         {isUser ? (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span className={styles.avatarInitial}>{getInitials(userName)}</span>
         ) : (
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2a4 4 0 0 1 4 4v2h2a2 2 0 0 1 2 2v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-8a2 2 0 0 1 2-2h2V6a4 4 0 0 1 4-4z"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/></svg>
         )}
@@ -371,7 +363,10 @@ function formatAgentName(name) {
     .replace(/\b\w/g, (c) => c.toUpperCase())
     .replace("Triage Agent", "AI Advisor");
 }
-
+function getInitials(name) {
+  if (!name) return "U";
+  return name.trim().charAt(0).toUpperCase();
+}
 
 function simpleMarkdown(text) {
   if (!text) return "";
