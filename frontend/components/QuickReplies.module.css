@@ -1,119 +1,94 @@
-/* QuickReplies — Interactive option buttons */
-
 .container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 4px 0;
+  margin-top: 0.75rem;
+  padding: 1.1rem 1.25rem;
+  background: rgba(26, 35, 54, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(64, 74, 96, 0.4);
+  border-radius: 16px;
+  max-width: 420px;
 }
 
 .label {
-  font-size: 13px;
+  font-size: 0.8125rem;
   font-weight: 600;
-  color: #e2e8f0;
-  padding-left: 2px;
+  color: #ffffff;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.01em;
 }
 
 .options {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  flex-direction: column;
+  gap: 0.6rem;
 }
 
 .optionBtn {
-  padding: 8px 18px;
-  background: linear-gradient(135deg, #1a3a6a 0%, #15305a 100%);
-  border: 1px solid rgba(90, 156, 245, 0.25);
-  border-radius: 8px;
-  color: #a8c8f0;
-  font-size: 13px;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 1rem;
+  background: rgba(32, 43, 64, 0.6);
+  border: 1px solid rgba(64, 74, 96, 0.5);
+  border-radius: 9999px;
+  color: #f8fafc;
+  font-size: 0.875rem;
   font-weight: 500;
-  font-family: inherit;
   cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
+  transition: all 150ms ease;
 }
 
 .optionBtn:hover:not(:disabled) {
-  background: linear-gradient(135deg, #1e4580 0%, #1a3a6a 100%);
-  border-color: rgba(90, 156, 245, 0.5);
-  color: #c0d8f8;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(90, 156, 245, 0.15);
-}
-
-.optionBtn:active:not(:disabled) {
-  transform: translateY(0);
+  border-color: rgba(74, 139, 245, 0.6);
+  background: rgba(74, 139, 245, 0.12);
+  color: #ffffff;
 }
 
 .optionSelected {
-  background: linear-gradient(135deg, #2a5090 0%, #1e4580 100%) !important;
-  border-color: #5a9cf5 !important;
-  color: #fff !important;
+  border-color: #4a8bf5;
+  background: rgba(74, 139, 245, 0.2);
+  color: #ffffff;
 }
 
 .optionDimmed {
-  opacity: 0.35;
-  cursor: default;
+  opacity: 0.4;
 }
 
 .optionBtn:disabled {
   cursor: default;
 }
 
-/* Other text input */
 .otherInput {
   display: flex;
-  gap: 8px;
-  margin-top: 4px;
-  animation: slideIn 0.2s ease-out;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
 }
 
 .otherField {
   flex: 1;
-  padding: 8px 14px;
-  background: rgba(15, 22, 40, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  color: #e2e8f0;
-  font-size: 13px;
-  font-family: inherit;
-  outline: none;
-  transition: border-color 0.2s ease;
+  padding: 0.55rem 0.85rem;
+  background: rgba(32, 43, 64, 0.6);
+  border: 1px solid rgba(64, 74, 96, 0.5);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 0.875rem;
 }
 
 .otherField:focus {
-  border-color: rgba(90, 156, 245, 0.4);
-}
-
-.otherField::placeholder {
-  color: #5a6a82;
+  border-color: #4a8bf5;
+  outline: none;
 }
 
 .otherSubmit {
-  padding: 8px 16px;
-  background: linear-gradient(135deg, #4A8BF5 0%, #2A5FC7 100%);
-  border: none;
-  border-radius: 8px;
-  color: white;
-  font-size: 13px;
-  font-weight: 500;
-  font-family: inherit;
+  padding: 0.55rem 1rem;
+  background: #4a8bf5;
+  color: #fff;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.8125rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.otherSubmit:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(74, 139, 245, 0.3);
 }
 
 .otherSubmit:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+  opacity: 0.5;
+  cursor: not-allowed;
 }

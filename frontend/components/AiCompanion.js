@@ -1,188 +1,106 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import styles from "./AiCompanion.module.css";
 
-/**
- * AI Companion Robot — sits on the right side of the chat.
- *
- * Props:
- *   status: "idle" | "thinking" | "streaming" | "done"
- *   userName: string (optional)
- */
-
-const CONTEXTUAL_MESSAGES = {
-  idle: [
-    "Need any assistance?",
-    "I can help with accounts, loans, cards and more.",
-    "Ask me anything about Pakistani banking.",
-    "I'm here to help.",
-  ],
-  greeting: "Hi! Nice to see you again 👋",
-  thinking: "Let me check that for you...",
-  streaming: [
-    "I'm working on your answer...",
-    "Analyzing the data...",
-    "I'm comparing a few options for you...",
-  ],
-  done: "Here's what I found.",
+const STATUS_LABELS = {
+  idle: "Idle",
+  thinking: "Thinking…",
+  streaming: "Responding…",
+  done: "Done",
 };
 
 export default function AiCompanion({ status = "idle", userName }) {
-  const [message, setMessage] = useState(CONTEXTUAL_MESSAGES.greeting);
-  const [showGreeting, setShowGreeting] = useState(true);
-  const [blinking, setBlinking] = useState(false);
-  const prevStatusRef = useRef(status);
-  const idleIndexRef = useRef(0);
-  const streamIndexRef = useRef(0);
-
-  // Handle greeting → idle transition
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowGreeting(false);
-    }, 4000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Handle status-based messages
-  useEffect(() => {
-    if (showGreeting) return;
-
-    if (status === "thinking") {
-      setMessage(CONTEXTUAL_MESSAGES.thinking);
-    } else if (status === "streaming") {
-      const msgs = CONTEXTUAL_MESSAGES.streaming;
-      setMessage(msgs[streamIndexRef.current % msgs.length]);
-      streamIndexRef.current++;
-    } else if (status === "done" && prevStatusRef.current === "streaming") {
-      setMessage(CONTEXTUAL_MESSAGES.done);
-      // After 5s, go back to idle message
-      const timer = setTimeout(() => {
-        const msgs = CONTEXTUAL_MESSAGES.idle;
-        setMessage(msgs[idleIndexRef.current % msgs.length]);
-        idleIndexRef.current++;
-      }, 5000);
-      prevStatusRef.current = status;
-      return () => clearTimeout(timer);
-    } else if (status === "idle") {
-      const msgs = CONTEXTUAL_MESSAGES.idle;
-      setMessage(msgs[idleIndexRef.current % msgs.length]);
-    }
-
-    prevStatusRef.current = status;
-  }, [status, showGreeting]);
-
-  // Rotate idle messages slowly (every 12 seconds)
-  useEffect(() => {
-    if (status !== "idle" || showGreeting) return;
-
-    const interval = setInterval(() => {
-      const msgs = CONTEXTUAL_MESSAGES.idle;
-      idleIndexRef.current = (idleIndexRef.current + 1) % msgs.length;
-      setMessage(msgs[idleIndexRef.current]);
-    }, 12000);
-
-    return () => clearInterval(interval);
-  }, [status, showGreeting]);
-
-  // Occasional blinking
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setBlinking(true);
-      setTimeout(() => setBlinking(false), 200);
-    }, 4000 + Math.random() * 3000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const statusLabel =
-    status === "thinking" ? "Thinking..." :
-    status === "streaming" ? "Analyzing..." :
-    status === "done" ? "Ready" : "Idle";
-
-  const isActive = status === "thinking" || status === "streaming";
+  const label = STATUS_LABELS[status] || "Idle";
+  const active = status === "thinking" || status === "streaming";
 
   return (
-    <div className={styles.companion}>
-      {/* Title */}
-      <div className={styles.title}>
-        AI Assistant<br />
-        <span className={styles.titleSub}>Companion</span>
+    <aside className={styles.panel}>
+      <div className={styles.glow} />
+
+      <div className={styles.inner}>
+        {status === "thinking" && (
+          <div className={styles.thinkingBubble}>
+            <span /><span /><span />
+          </div>
+        )}
+
+        <div className={styles.mascotWrap}>
+          <div className={styles.mascotHalo} />
+          <div className={active ? styles.robotActive : styles.robot}>
+            <RobotSvg blink />
+          </div>
+        </div>
+
+        <h2 className={styles.name}>AI Assistant Companion</h2>
+        <div className={styles.statusRow}>
+          <span className={`${styles.dot} ${active ? styles.dotActive : ""}`} />
+          <span className={styles.status}>{label}</span>
+        </div>
+        <p className={styles.body}>
+          I&apos;m here to assist you on your banking journey.
+        </p>
       </div>
+    </aside>
+  );
+}
 
-      {/* Robot */}
-      <div className={`${styles.robotWrap} ${isActive ? styles.robotActive : ""}`}>
-        {/* Glow ring behind robot */}
-        <div className={`${styles.glowRing} ${isActive ? styles.glowRingActive : ""}`} />
+function RobotSvg() {
+  return (
+    <svg viewBox="0 0 200 200" className={styles.robotSvg} aria-hidden="true">
+      <defs>
+        {/* Clean, pure white/silver 3D gradient for the body */}
+        <radialGradient id="aiSphereGrad" cx="35%" cy="30%" r="75%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="40%" stopColor="#f0f4f8" />
+          <stop offset="80%" stopColor="#cbd5e1" />
+          <stop offset="100%" stopColor="#94a3b8" />
+        </radialGradient>
+        
+        {/* Dark glassy visor gradient */}
+        <linearGradient id="visorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#1a2030" />
+          <stop offset="100%" stopColor="#05080f" />
+        </linearGradient>
 
-        <svg
-          className={styles.robot}
-          width="100"
-          height="110"
-          viewBox="0 0 120 130"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          {/* Antenna */}
-          <line x1="60" y1="18" x2="60" y2="8" stroke="#5a9cf5" strokeWidth="2" strokeLinecap="round" />
-          <circle cx="60" cy="5" r="4" fill="#5a9cf5" opacity="0.8">
-            {isActive && <animate attributeName="opacity" values="0.4;1;0.4" dur="1.2s" repeatCount="indefinite" />}
-          </circle>
+        {/* Glowing eyes */}
+        <radialGradient id="aiEyeGrad" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#ffffff" />
+          <stop offset="40%" stopColor="#40f0ff" />
+          <stop offset="100%" stopColor="#0088aa" />
+        </radialGradient>
 
-          {/* Head */}
-          <rect x="28" y="18" width="64" height="50" rx="16" fill="#1a2a4a" stroke="#2a4a7a" strokeWidth="1.5" />
+        <filter id="aiEyeGlow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
 
-          {/* Face plate */}
-          <rect x="34" y="24" width="52" height="38" rx="12" fill="rgba(90,156,245,0.08)" stroke="rgba(90,156,245,0.2)" strokeWidth="1" />
+      {/* Main 3D Sphere */}
+      <circle cx="100" cy="100" r="70" fill="url(#aiSphereGrad)" />
+      
+      {/* Top glossy highlight to make it look like smooth plastic/metal */}
+      <ellipse cx="100" cy="45" rx="45" ry="15" fill="#ffffff" opacity="0.6" filter="blur(2px)" />
 
-          {/* Eyes */}
-          <g>
-            <circle cx="45" cy="42" r={blinking ? 1 : 6} fill="#5a9cf5" opacity="0.9">
-              {isActive && <animate attributeName="r" values="5;7;5" dur="2s" repeatCount="indefinite" />}
-            </circle>
-            <circle cx="45" cy="42" r={blinking ? 0 : 3} fill="#8bc4ff" opacity="0.6" />
-            <circle cx="75" cy="42" r={blinking ? 1 : 6} fill="#5a9cf5" opacity="0.9">
-              {isActive && <animate attributeName="r" values="5;7;5" dur="2s" repeatCount="indefinite" />}
-            </circle>
-            <circle cx="75" cy="42" r={blinking ? 0 : 3} fill="#8bc4ff" opacity="0.6" />
-          </g>
+      {/* Recessed Visor base (drop shadow) */}
+      <rect x="38" y="72" width="124" height="60" rx="30" fill="#000000" opacity="0.4" transform="translate(0, 2)" filter="blur(2px)" />
+      
+      {/* Actual Visor */}
+      <rect x="40" y="70" width="120" height="56" rx="28" fill="url(#visorGrad)" stroke="#64748b" strokeWidth="1.5" />
 
-          {/* Mouth */}
-          <path d="M50 52 Q60 58 70 52" stroke="#5a9cf5" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.5" />
+      {/* Visor internal reflection (glass shine) */}
+      <rect x="45" y="73" width="110" height="15" rx="7.5" fill="#ffffff" opacity="0.15" />
 
-          {/* Neck */}
-          <rect x="52" y="68" width="16" height="6" rx="3" fill="#1a2a4a" stroke="#2a4a7a" strokeWidth="1" />
+      {/* Glowing eyes */}
+      <g className={styles.eyes}>
+        <ellipse cx="78" cy="98" rx="8" ry="12" fill="url(#aiEyeGrad)" filter="url(#aiEyeGlow)" />
+        <ellipse cx="122" cy="98" rx="8" ry="12" fill="url(#aiEyeGrad)" filter="url(#aiEyeGlow)" />
+      </g>
 
-          {/* Body */}
-          <rect x="32" y="74" width="56" height="40" rx="12" fill="#1a2a4a" stroke="#2a4a7a" strokeWidth="1.5" />
-
-          {/* Chest light */}
-          <circle cx="60" cy="92" r="6" fill="rgba(90,156,245,0.15)" stroke="#5a9cf5" strokeWidth="1" opacity="0.6">
-            {isActive && <animate attributeName="opacity" values="0.3;0.8;0.3" dur="1.5s" repeatCount="indefinite" />}
-          </circle>
-          <circle cx="60" cy="92" r="3" fill="#5a9cf5" opacity="0.4">
-            {isActive && <animate attributeName="opacity" values="0.2;0.7;0.2" dur="1.5s" repeatCount="indefinite" />}
-          </circle>
-
-          {/* Arms */}
-          <rect x="18" y="78" width="12" height="28" rx="6" fill="#1a2a4a" stroke="#2a4a7a" strokeWidth="1" />
-          <rect x="90" y="78" width="12" height="28" rx="6" fill="#1a2a4a" stroke="#2a4a7a" strokeWidth="1" />
-
-          {/* Ear accents */}
-          <circle cx="28" cy="38" r="4" fill="#1a2a4a" stroke="#2a4a7a" strokeWidth="1" />
-          <circle cx="92" cy="38" r="4" fill="#1a2a4a" stroke="#2a4a7a" strokeWidth="1" />
-        </svg>
-      </div>
-
-      {/* Status */}
-      <div className={styles.status}>
-        <span className={`${styles.statusDot} ${isActive ? styles.statusDotActive : ""}`} />
-        <span className={styles.statusText}>{statusLabel}</span>
-      </div>
-
-      {/* Speech bubble */}
-      <div className={styles.speechBubble}>
-        <p className={styles.speechText}>{message}</p>
-      </div>
-    </div>
+      {/* Glowing mouth indicator */}
+      <rect x="90" y="116" width="20" height="4" rx="2" fill="#40f0ff" filter="url(#aiEyeGlow)" opacity="0.8" />
+    </svg>
   );
 }
