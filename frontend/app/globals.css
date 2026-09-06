@@ -12,11 +12,11 @@
 
 :root {
   /* Colors — Dark Theme (UI/UX Pro Max: Financial Dashboard + Cinematic Dark) */
-  --color-bg-primary: #020617; /* Very deep navy */
-  --color-bg-secondary: #0A0A0F;
-  --color-bg-tertiary: #0E1223; /* Card bg */
-  --color-bg-elevated: #1A1E2F;
-  --color-bg-hover: #1E293B;
+  --color-bg-primary: #0b1226; /* Very deep navy */
+  --color-bg-secondary: #0d1426;
+  --color-bg-tertiary: #131a2e; /* Card bg */
+  --color-bg-elevated: #1e2740;
+  --color-bg-hover: #243150;
 
   /* Accent Colors */
   --color-accent-blue: #4A8BF5;
@@ -32,7 +32,7 @@
   --color-accent-purple-subtle: rgba(139, 92, 246, 0.12);
 
   /* Text */
-  --color-text-primary: #F8FAFC;
+  --color-text-primary: #FFFFFF;
   --color-text-secondary: #94A3B8;
   --color-text-tertiary: #64748B;
   --color-text-inverse: #020617;
@@ -58,17 +58,17 @@
   --gradient-blue: linear-gradient(135deg, #4A8BF5 0%, #2A5FC7 100%);
   --gradient-gold: linear-gradient(135deg, #A16207 0%, #713F12 100%);
   --gradient-card: linear-gradient(180deg, rgba(26,30,47,0.5) 0%, rgba(14,18,35,0.8) 100%);
-  --gradient-bg: linear-gradient(180deg, #0a0a0f 0%, #020617 100%); /* Cinematic Background */
+  --gradient-bg: radial-gradient(ellipse at 50% 30%, #1a1f3a 0%, #131830 30%, #0b0f1f 62%, #07090f 100%); /* Soft glowing center → near-black edge (target ref) */
   --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.15) 0%, transparent 60%);
   --gradient-hero: radial-gradient(ellipse at 30% 20%, rgba(59,130,246,0.08) 0%, transparent 50%),
                    radial-gradient(ellipse at 70% 80%, rgba(139,92,246,0.06) 0%, transparent 50%);
 
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.8125rem;
-  --font-size-base: 0.875rem;
-  --font-size-md: 1rem;
+  --font-size-xs: 0.8125rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 0.9375rem;
+  --font-size-md: 1.0625rem;
   --font-size-lg: 1.125rem;
   --font-size-xl: 1.25rem;
   --font-size-2xl: 1.5rem;
@@ -354,6 +354,23 @@ input, textarea, select {
   background-clip: text;
 }
 
+/* Center soft-glow spotlight — lifts chat text off the dark bg */
+.centerGlow::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 75%;
+  height: 65%;
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 45%, transparent 72%);
+  pointer-events: none;
+  z-index: 0;
+}
+.centerGlow > * {
+  position: relative;
+  z-index: 1;
+}
 
 /* ─── Animations ───────────────────────────────────────────────── */
 
@@ -525,7 +542,9 @@ input, textarea, select {
 
 .markdown-content p {
   margin-bottom: var(--space-3);
-  line-height: 1.7;
+  line-height: 1.75;
+  color: #ffffff;
+  text-shadow: 0 0 1px rgba(255, 255, 255, 0.25);
 }
 
 .markdown-content ul,
@@ -537,6 +556,7 @@ input, textarea, select {
 .markdown-content li {
   margin-bottom: var(--space-1);
   line-height: 1.6;
+  color: #f1f5f9;
 }
 
 .markdown-content strong {

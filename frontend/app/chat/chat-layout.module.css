@@ -1,21 +1,19 @@
 /* ==========================================================
- * Chat Layout — Sidebar | Main Chat | AI Companion
- * Three-column layout matching the target screenshots.
+ * Chat Layout — Sidebar (resizable) | Main Chat
  * ========================================================== */
 
 .chatLayout {
   display: flex;
   height: 100vh;
   overflow: hidden;
-  background: #060b18;
+  background: radial-gradient(ellipse at 50% 28%, #171c33 0%, #11152a 32%, #0a0d1a 64%, #07090f 100%);
 }
-
 .loadingScreen {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: #060b18;
+  background: radial-gradient(ellipse at 50% 28%, #171c33 0%, #11152a 32%, #0a0d1a 64%, #07090f 100%);
 }
 
 .loadingSpinner {
@@ -31,28 +29,26 @@
   to { transform: rotate(360deg); }
 }
 
-/* ─── Sidebar ─────────────────────────────────────────────────── */
+/* ─── Sidebar ─────────────────────────────────────────── */
 
 .sidebar {
-  width: 280px;
-  min-width: 280px;
   height: 100vh;
-  background: #0a1020;
-  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(12, 17, 32, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   flex-direction: column;
-  transition: transform 0.3s ease, margin-left 0.3s ease;
+  transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
   position: relative;
   z-index: 2;
-}
-
-.sidebar:not(.sidebarOpen) {
-  transform: translateX(-100%);
-  margin-right: -280px;
+  flex-shrink: 0;
 }
 
 .sidebarHeader {
   padding: 16px 14px 12px;
+  flex-shrink: 0;
 }
 
 .sidebarTopRow {
@@ -64,31 +60,33 @@
 }
 
 .sidebarBrand {
-  color: #dbeafe;
-  font-size: 13px;
+  color: #e8efff;
+  font-size: 14px;
   font-weight: 700;
   letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sidebarCloseBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  color: #8495b0;
-  border: 1px solid rgba(148, 163, 184, 0.16);
-  border-radius: 7px;
+  width: 30px;
+  height: 30px;
+  color: #aab8ce;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 8px;
   cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
 }
 
 .sidebarCloseBtn:hover {
-  color: #e5efff;
-  background: rgba(90, 156, 245, 0.12);
-}
-
-.logoRow {
-  display: none; /* Hidden — branding is in the chat header now */
+  color: #ffffff;
+  background: rgba(90, 156, 245, 0.14);
+  border-color: rgba(90, 156, 245, 0.4);
 }
 
 .newChatBtn {
@@ -97,12 +95,12 @@
   justify-content: center;
   gap: 8px;
   width: 100%;
-  padding: 9px 14px;
+  padding: 11px 14px;
   background: linear-gradient(135deg, #1a3a6a 0%, #15305a 100%);
-  border: 1px solid rgba(90, 156, 245, 0.25);
-  border-radius: 8px;
-  color: #a8c8f0;
-  font-size: 13px;
+  border: 1px solid rgba(90, 156, 245, 0.28);
+  border-radius: 10px;
+  color: #d4e4f8;
+  font-size: 14px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -111,8 +109,8 @@
 
 .newChatBtn:hover {
   background: linear-gradient(135deg, #1e4580 0%, #1a3a6a 100%);
-  border-color: rgba(90, 156, 245, 0.5);
-  color: #c0d8f8;
+  border-color: rgba(90, 156, 245, 0.55);
+  color: #ffffff;
 }
 
 /* Search */
@@ -120,12 +118,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px;
-  margin: 8px 14px;
-  background: rgba(15, 22, 40, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
-  color: #5a6a82;
+  padding: 10px 12px;
+  margin: 8px 14px 4px;
+  background: rgba(15, 22, 40, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: #8a9ab4;
 }
 
 .searchInput {
@@ -133,35 +131,35 @@
   border: none;
   outline: none;
   background: transparent;
-  font-size: 15px;
+  font-size: 14px;
   color: #e2e8f0;
   font-family: inherit;
 }
 
 .searchInput::placeholder {
-  color: #4a5a72;
+  color: #6a7a94;
 }
 
 /* Conversation List */
 .convList {
   flex: 1;
   overflow-y: auto;
-  padding: 4px 10px;
+  padding: 4px 10px 10px;
 }
 
 .convListLabel {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
-  color: #5a6a82;
+  color: #8a9ab4;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 12px 6px 6px;
+  letter-spacing: 0.07em;
+  padding: 14px 6px 6px;
 }
 
 .convSkeleton {
-  height: 40px;
+  height: 44px;
   margin-bottom: 6px;
-  border-radius: 6px;
+  border-radius: 8px;
 }
 
 .dateGroup {
@@ -169,22 +167,22 @@
 }
 
 .dateLabel {
-  font-size: 15px;
+  font-size: 11px;
   font-weight: 600;
-  color: #4a5a72;
+  color: #8a9ab4;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
   padding: 10px 6px 4px;
 }
 
 .convItem {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   width: 100%;
   text-align: left;
-  padding: 8px 10px;
-  border-radius: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
   transition: all 0.15s ease;
   border: 1px solid transparent;
   cursor: pointer;
@@ -196,22 +194,22 @@
 }
 
 .convActive {
-  background: rgba(90, 156, 245, 0.08) !important;
-  border-color: rgba(90, 156, 245, 0.15);
+  background: rgba(90, 156, 245, 0.1) !important;
+  border-color: rgba(90, 156, 245, 0.2);
 }
 
 .convTitle {
-  font-size: 16px;
-  color: #c0d0e0;
+  font-size: 14.5px;
+  color: #d4deec;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 195px;
   font-weight: 400;
+  line-height: 1.35;
 }
 
 .convActive .convTitle {
-  color: #e2e8f0;
+  color: #ffffff;
   font-weight: 500;
 }
 
@@ -219,15 +217,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
-  color: #4a5a72;
+  font-size: 12px;
+  color: #8a9ab4;
 }
 
 .deleteBtn {
   opacity: 0;
-  color: #5a6a82;
-  padding: 2px;
-  border-radius: 4px;
+  color: #8a9ab4;
+  padding: 3px;
+  border-radius: 5px;
   transition: all 0.15s ease;
   background: none;
   border: none;
@@ -240,7 +238,7 @@
 
 .deleteBtn:hover {
   color: #f87171;
-  background: rgba(248, 113, 113, 0.1);
+  background: rgba(248, 113, 113, 0.12);
 }
 
 /* Empty State */
@@ -251,13 +249,13 @@
   gap: 8px;
   padding: 40px 16px;
   text-align: center;
-  color: #4a5a72;
-  font-size: 13px;
+  color: #6a7a94;
+  font-size: 14px;
 }
 
 .emptyHint {
-  font-size: 11px;
-  color: #3a4a62;
+  font-size: 12px;
+  color: #5a6a82;
 }
 
 /* Sidebar Footer */
@@ -267,6 +265,7 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex-shrink: 0;
 }
 
 .footerBtn {
@@ -274,10 +273,10 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 8px 10px;
-  font-size: 13px;
-  color: #6a7a94;
-  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #b0bdd0;
+  border-radius: 8px;
   transition: all 0.15s ease;
   background: none;
   border: none;
@@ -287,10 +286,53 @@
 
 .footerBtn:hover {
   background: rgba(20, 30, 55, 0.6);
-  color: #c0d0e0;
+  color: #ffffff;
 }
 
-/* ─── Main Content ────────────────────────────────────────────── */
+/* ─── Resize Handle ──────────────────────────────────── */
+
+.resizeHandle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 5;
+  transition: background 0.15s ease;
+}
+
+.resizeHandle:hover,
+.resizeHandleDragging {
+  background: rgba(90, 156, 245, 0.4);
+}
+
+/* ─── Desktop open button (when collapsed) ───────────── */
+
+.openBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  top: 14px;
+  left: 14px;
+  z-index: 101;
+  padding: 9px;
+  background: #0a1020;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #c0d0e0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.openBtn:hover {
+  background: rgba(90, 156, 245, 0.16);
+  color: #ffffff;
+  border-color: rgba(90, 156, 245, 0.4);
+}
+
+/* ─── Main Content ───────────────────────────────────── */
 
 .mainContent {
   flex: 1;
@@ -300,24 +342,9 @@
   min-width: 0;
 }
 
-/* ─── Mobile ──────────────────────────────────────────────────── */
-
+/* mobile toggle hidden on desktop */
 .mobileToggle {
-  display: flex;
-  position: fixed;
-  top: 12px;
-  left: 12px;
-  z-index: 101;
-  padding: 8px;
-  background: #0a1020;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  color: #c0d0e0;
-  cursor: pointer;
-}
-
-.sidebarOpen ~ .mobileToggle {
-  left: 252px;
+  display: none;
 }
 
 .overlay {
@@ -330,21 +357,24 @@
     left: 0;
     top: 0;
     z-index: 100;
-    transform: translateX(-100%);
-    margin-right: 0;
+    width: 280px !important;
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
   }
 
-  .sidebar:not(.sidebarOpen) {
-    margin-right: 0;
-  }
+  .openBtn { display: none; }
 
-  .sidebarOpen {
-    transform: translateX(0);
-  }
-
-  .sidebarOpen ~ .mobileToggle {
-    left: 252px;
+  .mobileToggle {
+    display: flex;
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 101;
+    padding: 8px;
+    background: #0a1020;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    color: #c0d0e0;
+    cursor: pointer;
   }
 
   .overlay {

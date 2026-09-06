@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { useToast } from "@/lib/toast";
@@ -15,10 +15,23 @@ export default function ChatLayout({ children }) {
 
   const [conversations, setConversations] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarWidth, setSidebarWidth] = useState(400);
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingConvs, setLoadingConvs] = useState(true);
+  const [dragging, setDragging] = useState(false);
+  const dragState = useRef(null);
 
   const activeConvId = pathname.startsWith("/chat/") ? pathname.split("/chat/")[1] : null;
+
+  // Restore saved width
+  useEffect(() => {
+    const saved = typeof window !== "undefined" ? localStorage.getItem("sidebarWidth") : null;
+    if (saved) setSidebarWidth(Number(saved));
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") localStorage.setItem("sidebarWidth", String(sidebarWidth));
+  }, [sidebarWidth]);
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -35,7 +48,6 @@ export default function ChatLayout({ children }) {
     if (user) fetchConversations();
   }, [user, fetchConversations]);
 
-  // Expose refresh function for child pages
   useEffect(() => {
     window.__refreshConversations = fetchConversations;
     return () => { delete window.__refreshConversations; };
@@ -57,10 +69,43 @@ export default function ChatLayout({ children }) {
     }
   };
 
+  // Drag-to-resize
+  const handleDragStart = (e) => {
+    e.preventDefault();
+    setDragging(true);
+    dragState.current = {
+      startX: e.clientX,
+      startWidth: sidebarWidth,
+    };
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+  };
+
+  useEffect(() => {
+    if (!dragging) return;
+    const handleMove = (ev) => {
+      if (!dragState.current) return;
+      const delta = ev.clientX - dragState.current.startX;
+      const next = Math.min(Math.max(dragState.current.startWidth + delta, 260), 500);
+      setSidebarWidth(next);
+    };
+    const handleUp = () => {
+      setDragging(false);
+      dragState.current = null;
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+    document.addEventListener("mousemove", handleMove);
+    document.addEventListener("mouseup", handleUp);
+    return () => {
+      document.removeEventListener("mousemove", handleMove);
+      document.removeEventListener("mouseup", handleUp);
+    };
+  }, [dragging]);
+
   const filteredConversations = conversations.filter((c) =>
     c.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
   const grouped = groupByDate(filteredConversations);
 
   if (authLoading) {
@@ -76,7 +121,10 @@ export default function ChatLayout({ children }) {
   return (
     <div className={styles.chatLayout}>
       {/* Sidebar */}
-      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
+      <aside
+        className={styles.sidebar}
+        style={{ width: sidebarOpen ? sidebarWidth : 0 }}
+      >
         <div className={styles.sidebarHeader}>
           <div className={styles.sidebarTopRow}>
             <span className={styles.sidebarBrand}>AI Banking Advisor</span>
@@ -89,19 +137,14 @@ export default function ChatLayout({ children }) {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6"/></svg>
             </button>
           </div>
-          <button
-            className={styles.newChatBtn}
-            onClick={handleNewChat}
-            title="New conversation"
-          >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <button className={styles.newChatBtn} onClick={handleNewChat} title="New conversation">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             New Chat
           </button>
         </div>
 
-        {/* Search */}
         <div className={styles.searchBox}>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input
             type="text"
             placeholder="Search conversations..."
@@ -111,7 +154,6 @@ export default function ChatLayout({ children }) {
           />
         </div>
 
-        {/* Conversation List */}
         <div className={styles.convList}>
           <div className={styles.convListLabel}>Recent Conversations</div>
 
@@ -121,7 +163,7 @@ export default function ChatLayout({ children }) {
             ))
           ) : filteredConversations.length === 0 ? (
             <div className={styles.emptyState}>
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4a5a72" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#5a6a82" strokeWidth="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
               <p>No conversations yet</p>
               <p className={styles.emptyHint}>Start a new chat to get banking advice</p>
             </div>
@@ -141,12 +183,8 @@ export default function ChatLayout({ children }) {
                     <div className={styles.convTitle}>{conv.title}</div>
                     <div className={styles.convMeta}>
                       <span>{conv.message_count} messages</span>
-                      <button
-                        className={styles.deleteBtn}
-                        onClick={(e) => handleDeleteConv(conv.id, e)}
-                        title="Delete conversation"
-                      >
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                      <button className={styles.deleteBtn} onClick={(e) => handleDeleteConv(conv.id, e)} title="Delete">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
                       </button>
                     </div>
                   </div>
@@ -156,18 +194,33 @@ export default function ChatLayout({ children }) {
           )}
         </div>
 
-        {/* Sidebar Footer */}
         <div className={styles.sidebarFooter}>
           <button onClick={() => router.push("/dashboard")} className={styles.footerBtn}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
             Dashboard
           </button>
           <button onClick={logout} className={styles.footerBtn}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Logout
           </button>
         </div>
+
+        {/* Drag handle */}
+        {sidebarOpen && (
+          <div
+            className={`${styles.resizeHandle} ${dragging ? styles.resizeHandleDragging : ""}`}
+            onMouseDown={handleDragStart}
+            title="Drag to resize"
+          />
+        )}
       </aside>
+
+      {/* Desktop open button when collapsed */}
+      {!sidebarOpen && (
+        <button className={styles.openBtn} onClick={() => setSidebarOpen(true)} title="Open sidebar" aria-label="Open sidebar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      )}
 
       {/* Mobile toggle */}
       <button
@@ -179,19 +232,14 @@ export default function ChatLayout({ children }) {
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d={sidebarOpen ? "M15 18l-6-6 6-6" : "M9 18l6-6-6-6"}/></svg>
       </button>
 
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div className={styles.overlay} onClick={() => setSidebarOpen(false)} />
-      )}
+      {sidebarOpen && <div className={styles.overlay} onClick={() => setSidebarOpen(false)} />}
 
-      {/* Main Content */}
       <main className={styles.mainContent}>
         {children}
       </main>
     </div>
   );
 }
-
 
 function groupByDate(conversations) {
   const groups = {};
