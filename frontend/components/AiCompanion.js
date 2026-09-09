@@ -31,7 +31,9 @@ export default function AiCompanion({ status = "idle", userName }) {
           </div>
         </div>
 
-        <h2 className={styles.name}>AI Assistant Companion</h2>
+        <h2 className={styles.name}>
+          AI Assistant<br/>Companion
+        </h2>
         <div className={styles.statusRow}>
           <span className={`${styles.dot} ${active ? styles.dotActive : ""}`} />
           <span className={styles.status}>{label}</span>

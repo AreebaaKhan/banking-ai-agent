@@ -33,10 +33,10 @@
 
 .sidebar {
   height: 100vh;
-  background: rgba(12, 17, 32, 0.88);
+  background: rgba(16, 22, 42, 0.82);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  border-right: 1px solid rgba(120, 150, 200, 0.16);
   display: flex;
   flex-direction: column;
   transition: width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
@@ -60,8 +60,8 @@
 }
 
 .sidebarBrand {
-  color: #e8efff;
-  font-size: 14px;
+  color: #ffffff;
+  font-size: 15px;
   font-weight: 700;
   letter-spacing: -0.01em;
   white-space: nowrap;
@@ -99,8 +99,8 @@
   background: linear-gradient(135deg, #1a3a6a 0%, #15305a 100%);
   border: 1px solid rgba(90, 156, 245, 0.28);
   border-radius: 10px;
-  color: #d4e4f8;
-  font-size: 14px;
+  color: #ffffff;
+  font-size: 15px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -150,7 +150,7 @@
 .convListLabel {
   font-size: 11px;
   font-weight: 600;
-  color: #8a9ab4;
+  color: #a8b8d0;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   padding: 14px 6px 6px;
@@ -199,8 +199,8 @@
 }
 
 .convTitle {
-  font-size: 14.5px;
-  color: #d4deec;
+  font-size: 15px;
+  color: #e0eaf5;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -217,8 +217,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 12px;
-  color: #8a9ab4;
+  font-size: 13px;
+  color: #9aabc4;
 }
 
 .deleteBtn {
@@ -273,9 +273,9 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 10px 12px;
-  font-size: 14px;
-  color: #b0bdd0;
+  padding: 11px 12px;
+  font-size: 15px;
+  color: #d4deec;
   border-radius: 8px;
   transition: all 0.15s ease;
   background: none;

@@ -33,8 +33,8 @@
 
   /* Text */
   --color-text-primary: #FFFFFF;
-  --color-text-secondary: #94A3B8;
-  --color-text-tertiary: #64748B;
+  --color-text-secondary: #B0BDD0;
+  --color-text-tertiary: #8A9AB4;
   --color-text-inverse: #020617;
 
   /* Borders & Surfaces */
@@ -58,7 +58,7 @@
   --gradient-blue: linear-gradient(135deg, #4A8BF5 0%, #2A5FC7 100%);
   --gradient-gold: linear-gradient(135deg, #A16207 0%, #713F12 100%);
   --gradient-card: linear-gradient(180deg, rgba(26,30,47,0.5) 0%, rgba(14,18,35,0.8) 100%);
-  --gradient-bg: radial-gradient(ellipse at 50% 30%, #1a1f3a 0%, #131830 30%, #0b0f1f 62%, #07090f 100%); /* Soft glowing center → near-black edge (target ref) */
+  --gradient-bg: radial-gradient(ellipse at 50% 30%, #20254a 0%, #161b3a 30%, #0d1226 62%, #0a0f1f 100%); /* Soft glowing center → near-black edge (target ref) */
   --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.15) 0%, transparent 60%);
   --gradient-hero: radial-gradient(ellipse at 30% 20%, rgba(59,130,246,0.08) 0%, transparent 50%),
                    radial-gradient(ellipse at 70% 80%, rgba(139,92,246,0.06) 0%, transparent 50%);
