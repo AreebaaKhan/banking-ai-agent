@@ -84,7 +84,7 @@ function RobotSvg() {
       <circle cx="100" cy="100" r="70" fill="url(#aiSphereGrad)" />
       
       {/* Top glossy highlight to make it look like smooth plastic/metal */}
-      <ellipse cx="100" cy="45" rx="45" ry="15" fill="#ffffff" opacity="0.6" filter="blur(2px)" />
+      {/* <ellipse cx="100" cy="45" rx="45" ry="15" fill="#ffffff" opacity="0.6" filter="blur(2px)" /> */}
 
       {/* Recessed Visor base (drop shadow) */}
       <rect x="38" y="72" width="124" height="60" rx="30" fill="#000000" opacity="0.4" transform="translate(0, 2)" filter="blur(2px)" />

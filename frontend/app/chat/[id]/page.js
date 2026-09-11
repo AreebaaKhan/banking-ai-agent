@@ -141,8 +141,7 @@ export default function ConversationPage({ params }) {
       <div className={styles.chatContainer}>
         <div className={styles.chatColumn}>
           <div className={styles.chatHeader}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5a9cf5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-8h6v8"/><path d="M3 10h18"/></svg>
-            <span className={styles.chatHeaderTitle}>AI Banking Advisor</span>
+             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5a9cf5" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
           </div>
           <div className={styles.messagesArea}>
             {Array.from({ length: 3 }).map((_, i) => (
@@ -166,20 +165,20 @@ export default function ConversationPage({ params }) {
       <div className={styles.chatColumn}>
         {/* Header */}
         <div className={styles.chatHeader}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5a9cf5" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span className={styles.chatHeaderTitle}>AI Banking Advisor</span>
-          {title && <span className={styles.chatHeaderSub}>— {title}</span>}
+           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5a9cf5" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          {title && <span className={styles.chatHeaderSub}>{title}</span>}
         </div>
 
         {/* Messages */}
         <div className={styles.messagesArea}>
           {messages.map((msg, idx) => (
-            <MessageBubble
+             <MessageBubble
               key={msg.id}
               message={msg}
               onSend={handleSend}
               streaming={streaming}
               isLast={idx === messages.length - 1}
+              userName={user?.full_name}
             />
           ))}
           {streaming && (
@@ -252,7 +251,7 @@ function detectQuickReplies(content) {
 }
 
 
-function MessageBubble({ message, onSend, streaming, isLast }) {
+function MessageBubble({ message, onSend, streaming, isLast, userName }) {
   const isUser = message.role === "user";
   const [copied, setCopied] = useState(false);
   const [quickRepliesUsed, setQuickRepliesUsed] = useState(false);
@@ -277,8 +276,8 @@ function MessageBubble({ message, onSend, streaming, isLast }) {
     <div className={`${styles.messageRow} ${isUser ? styles.userRow : styles.assistantRow}`}>
       <div className={`${styles.avatar} ${isUser ? styles.userAvatar : styles.aiAvatar}`}>
         {isUser ? (
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-         ) : (
+          <span className={styles.avatarInitial}>{getInitials(userName)}</span>
+        ) : (
           <img src="/images/brand-icon.png" alt="AI" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8 }} />
         )}
       </div>
@@ -325,6 +324,12 @@ function formatAgentName(name) {
     .replace("Triage Agent", "AI Advisor");
 }
 
+function getInitials(name) {
+  if (!name) return "U";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
 
 function simpleMarkdown(text) {
   if (!text) return "";

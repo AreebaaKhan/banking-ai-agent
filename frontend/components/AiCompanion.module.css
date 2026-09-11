@@ -1,6 +1,6 @@
 .panel {
   position: relative;
-  width: 360px;
+  width: 300px;
   flex-shrink: 0;
   height: 100%;
   display: flex;

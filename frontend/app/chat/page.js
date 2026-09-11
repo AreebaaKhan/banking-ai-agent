@@ -132,12 +132,6 @@ export default function NewChatPage() {
     return (
       <div className={styles.chatContainer}>
         <div className={styles.chatColumn}>
-          {/* Header */}
-          <div className={styles.chatHeader}>
-             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5a9cf5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-8h6v8"/><path d="M3 10h18"/></svg>
-            <span className={styles.chatHeaderTitle}>AI Banking Advisor</span>
-          </div>
-
           <div className={styles.welcomeScreen}>
             <div className={styles.welcomeGlow} />
             <h1 className={styles.welcomeTitle}>
@@ -175,8 +169,8 @@ export default function NewChatPage() {
                   rows={1}
                 />
                 {/* Mic button — visual only for now */}
-                <button className={styles.micBtn} disabled title="Voice input coming soon">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="1" width="6" height="11" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                <button className={styles.micBtn} title="Voice input coming soon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="1" width="6" height="11" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                 </button>
               </div>
               {/* EN | UR toggle */}
@@ -200,9 +194,8 @@ export default function NewChatPage() {
     <div className={styles.chatContainer}>
       <div className={styles.chatColumn}>
         {/* Header */}
-        <div className={styles.chatHeader}>
+         <div className={styles.chatHeader}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5a9cf5" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-          <span className={styles.chatHeaderTitle}>AI Banking Advisor</span>
         </div>
 
         {/* Messages */}
@@ -365,9 +358,10 @@ function formatAgentName(name) {
 }
 function getInitials(name) {
   if (!name) return "U";
-  return name.trim().charAt(0).toUpperCase();
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
 }
-
 function simpleMarkdown(text) {
   if (!text) return "";
   return text

@@ -31,7 +31,7 @@ export default function Home() {
             <path d="M18 34H30" stroke="white" strokeWidth="2" strokeLinecap="round"/>
             <defs>
               <linearGradient id="grad" x1="0" y1="0" x2="48" y2="48">
-                <stop stopColor="#3B82F6"/>
+                <stop stopColor="#1D4ED8"/>
                 <stop offset="1" stopColor="#1D4ED8"/>
               </linearGradient>
             </defs>

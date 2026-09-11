@@ -12,11 +12,11 @@
 
 :root {
   /* Colors — Dark Theme (UI/UX Pro Max: Financial Dashboard + Cinematic Dark) */
-  --color-bg-primary: #0b1226; /* Very deep navy */
-  --color-bg-secondary: #0d1426;
-  --color-bg-tertiary: #131a2e; /* Card bg */
-  --color-bg-elevated: #1e2740;
-  --color-bg-hover: #243150;
+   --color-bg-primary: #0F1A2C; /* Prussian Blue — deepest */
+  --color-bg-secondary: #101729;
+  --color-bg-tertiary: #121A2C; /* Card bg */
+  --color-bg-elevated: #1E243A;
+  --color-bg-hover: #24354F; /* Deep Space Blue — brightest navy */
 
   /* Accent Colors */
   --color-accent-blue: #4A8BF5;
@@ -58,7 +58,7 @@
   --gradient-blue: linear-gradient(135deg, #4A8BF5 0%, #2A5FC7 100%);
   --gradient-gold: linear-gradient(135deg, #A16207 0%, #713F12 100%);
   --gradient-card: linear-gradient(180deg, rgba(26,30,47,0.5) 0%, rgba(14,18,35,0.8) 100%);
-  --gradient-bg: radial-gradient(ellipse at 50% 30%, #20254a 0%, #161b3a 30%, #0d1226 62%, #0a0f1f 100%); /* Soft glowing center → near-black edge (target ref) */
+  --gradient-bg: radial-gradient(ellipse at 50% 30%, #1E243A 0%, #121A2C 40%, #101729 65%, #0F1A2C 100%); /* Prussian Blue — soft glowing navy center → deep edge */
   --gradient-glow: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.15) 0%, transparent 60%);
   --gradient-hero: radial-gradient(ellipse at 30% 20%, rgba(59,130,246,0.08) 0%, transparent 50%),
                    radial-gradient(ellipse at 70% 80%, rgba(139,92,246,0.06) 0%, transparent 50%);

@@ -6,14 +6,14 @@
   display: flex;
   height: 100vh;
   overflow: hidden;
-  background: radial-gradient(ellipse at 50% 28%, #171c33 0%, #11152a 32%, #0a0d1a 64%, #07090f 100%);
+   background: radial-gradient(ellipse at 50% 28%, #1E243A 0%, #121A2C 32%, #101729 64%, #0F1A2C 100%);
 }
 .loadingScreen {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  background: radial-gradient(ellipse at 50% 28%, #171c33 0%, #11152a 32%, #0a0d1a 64%, #07090f 100%);
+   background: radial-gradient(ellipse at 50% 28%, #1E243A 0%, #121A2C 32%, #101729 64%, #0F1A2C 100%);
 }
 
 .loadingSpinner {
@@ -60,13 +60,22 @@
 }
 
 .sidebarBrand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: #ffffff;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.01em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.sidebarBrandIcon {
+  flex-shrink: 0;
+  transform: translateY(-3px);
+  filter: drop-shadow(0 0 5px rgba(90, 156, 245, 0.9));
 }
 
 .sidebarCloseBtn {
@@ -75,7 +84,7 @@
   justify-content: center;
   width: 30px;
   height: 30px;
-  color: #aab8ce;
+  color: #ffffff;
   border: 1px solid rgba(148, 163, 184, 0.18);
   border-radius: 8px;
   cursor: pointer;
@@ -137,7 +146,7 @@
 }
 
 .searchInput::placeholder {
-  color: #6a7a94;
+  color: #ffffff;
 }
 
 /* Conversation List */
@@ -169,7 +178,7 @@
 .dateLabel {
   font-size: 11px;
   font-weight: 600;
-  color: #8a9ab4;
+  color: #9aacc4;
   text-transform: uppercase;
   letter-spacing: 0.07em;
   padding: 10px 6px 4px;
@@ -200,7 +209,7 @@
 
 .convTitle {
   font-size: 15px;
-  color: #e0eaf5;
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -218,12 +227,12 @@
   justify-content: space-between;
   align-items: center;
   font-size: 13px;
-  color: #9aabc4;
+  color: #9aacc4;
 }
 
 .deleteBtn {
   opacity: 0;
-  color: #8a9ab4;
+  color: #ffffff;
   padding: 3px;
   border-radius: 5px;
   transition: all 0.15s ease;
@@ -275,7 +284,7 @@
   width: 100%;
   padding: 11px 12px;
   font-size: 15px;
-  color: #d4deec;
+  color: #ffffff;
   border-radius: 8px;
   transition: all 0.15s ease;
   background: none;

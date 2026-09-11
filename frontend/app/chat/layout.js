@@ -127,7 +127,25 @@ export default function ChatLayout({ children }) {
       >
         <div className={styles.sidebarHeader}>
           <div className={styles.sidebarTopRow}>
-            <span className={styles.sidebarBrand}>AI Banking Advisor</span>
+            <span className={styles.sidebarBrand}>
+              <svg
+                className={styles.sidebarBrandIcon}
+                width="30"
+                height="25"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#5a9cf5"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 21h18" />
+                <path d="M5 21V10l7-5 7 5v11" />
+                <path d="M9 21v-8h6v8" />
+                <path d="M3 10h18" />
+              </svg>
+              <span>AI Banking Advisor</span>
+            </span>
             <button
               className={styles.sidebarCloseBtn}
               onClick={() => setSidebarOpen(false)}
