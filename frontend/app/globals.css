@@ -132,6 +132,13 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Simulate an 80% zoom out by default on desktop screens */
+@media (min-width: 1024px) {
+  html {
+    font-size: 13px;
+  }
+}
+
 body {
   font-family: var(--font-family);
   background: var(--gradient-bg);
@@ -534,17 +541,29 @@ input, textarea, select {
   margin-bottom: var(--space-2);
   font-weight: 600;
   color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+}
+
+.markdown-content h1:first-child,
+.markdown-content h2:first-child,
+.markdown-content h3:first-child,
+.markdown-content p:first-child > strong:first-child {
+  margin-top: 0;
 }
 
 .markdown-content h1 { font-size: var(--font-size-xl); }
 .markdown-content h2 { font-size: var(--font-size-lg); }
-.markdown-content h3 { font-size: var(--font-size-md); }
+.markdown-content h3 { font-size: var(--font-size-md); color: #5a9cf5; }
 
 .markdown-content p {
   margin-bottom: var(--space-3);
-  line-height: 1.75;
+  line-height: 1.7;
   color: #ffffff;
-  text-shadow: 0 0 1px rgba(255, 255, 255, 0.25);
+}
+
+/* Remove large gaps caused by empty paragraphs */
+.markdown-content p:empty {
+  display: none;
 }
 
 .markdown-content ul,
@@ -556,16 +575,16 @@ input, textarea, select {
 .markdown-content li {
   margin-bottom: var(--space-1);
   line-height: 1.6;
-  color: #f1f5f9;
+  color: #ffffff;
 }
 
 .markdown-content strong {
-  color: var(--color-text-primary);
+  color: #ffffff;
   font-weight: 600;
 }
 
 .markdown-content em {
-  color: var(--color-text-secondary);
+  color: #ffffff;
 }
 
 .markdown-content code {
@@ -589,30 +608,40 @@ input, textarea, select {
   padding: 0;
 }
 
+/* Table wrapper for horizontal scrolling */
 .markdown-content table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   margin-bottom: var(--space-4);
   font-size: var(--font-size-sm);
+  min-width: 600px;
 }
 
 .markdown-content th {
-  background: var(--color-bg-tertiary);
+  background: rgba(74, 139, 245, 0.12);
   padding: var(--space-2) var(--space-3);
   text-align: left;
   font-weight: 600;
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
+  color: #5a9cf5;
+  border: 1px solid rgba(90, 156, 245, 0.2);
+  word-wrap: break-word;
 }
 
 .markdown-content td {
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
+  color: #ffffff;
+  vertical-align: top;
+  word-wrap: break-word;
+}
+
+.markdown-content tr:nth-child(even) td {
+  background: rgba(15, 26, 44, 0.4);
 }
 
 .markdown-content tr:hover td {
-  background: var(--color-bg-secondary);
+  background: rgba(90, 156, 245, 0.06);
 }
 
 .markdown-content blockquote {

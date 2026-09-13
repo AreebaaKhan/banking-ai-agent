@@ -168,3 +168,15 @@ class AuthService:
             session.is_revoked = True
 
         logger.info(f"User logged out: {user_id}")
+
+    @staticmethod
+    async def change_password(
+        db: AsyncSession, user: "User", current_password: str, new_password: str
+    ) -> None:
+        """Change user password after verifying the current one."""
+        if not verify_password(current_password, user.password_hash):
+            raise ValueError("Current password is incorrect")
+
+        user.password_hash = hash_password(new_password)
+        await db.flush()
+        logger.info(f"Password changed for user: {user.email}")

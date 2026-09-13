@@ -195,7 +195,7 @@ async def query_banks(
         if min_rating > 0:
             query = query.where(Bank.overall_rating >= min_rating)
 
-        query = query.order_by(Bank.overall_rating.desc()).limit(10)
+        query = query.order_by(Bank.overall_rating.desc()).limit(5)
         result = await db.execute(query)
         banks = result.scalars().all()
 
@@ -214,12 +214,10 @@ async def query_banks(
                 "branch_count": b.branch_count,
                 "atm_count": b.atm_count,
                 "hq_city": b.hq_city,
-                "website": b.website,
-                "description": b.description,
             })
 
         logger.info(f"query_banks returned {len(bank_list)} results")
-        return json.dumps(bank_list, indent=2)
+        return json.dumps(bank_list)
 
 
 async def get_products(
@@ -242,7 +240,7 @@ async def get_products(
         if bank_name:
             query = query.where(Bank.name.ilike(f"%{bank_name}%"))
 
-        query = query.limit(15)
+        query = query.limit(8)
         result = await db.execute(query)
         rows = result.all()
 
@@ -252,16 +250,14 @@ async def get_products(
                 "bank": bname,
                 "name": product.name,
                 "category": product.category,
-                "description": product.description,
                 "features": product.features,
-                "eligibility": product.eligibility,
                 "fees": product.fees,
                 "min_balance": product.min_balance,
                 "profit_rate": product.profit_rate,
             })
 
         logger.info(f"get_products returned {len(products)} results")
-        return json.dumps(products, indent=2)
+        return json.dumps(products)
 
 
 async def get_cards(
@@ -284,7 +280,7 @@ async def get_cards(
         if bank_name:
             query = query.where(Bank.name.ilike(f"%{bank_name}%"))
 
-        query = query.limit(15)
+        query = query.limit(8)
         result = await db.execute(query)
         rows = result.all()
 
@@ -299,12 +295,10 @@ async def get_cards(
                 "cashback_rate": card.cashback_rate,
                 "reward_points": card.reward_points,
                 "min_income": card.min_income,
-                "features": card.features,
-                "benefits": card.benefits,
             })
 
         logger.info(f"get_cards returned {len(cards)} results")
-        return json.dumps(cards, indent=2)
+        return json.dumps(cards)
 
 
 async def get_loans(
@@ -332,7 +326,7 @@ async def get_loans(
                 (Loan.min_income == None) | (Loan.min_income <= max_income_required)
             )
 
-        query = query.limit(15)
+        query = query.limit(8)
         result = await db.execute(query)
         rows = result.all()
 
@@ -347,12 +341,10 @@ async def get_loans(
                 "max_amount": loan.max_amount,
                 "min_income": loan.min_income,
                 "processing_fee": loan.processing_fee,
-                "features": loan.features,
-                "eligibility": loan.eligibility,
             })
 
         logger.info(f"get_loans returned {len(loans)} results")
-        return json.dumps(loans, indent=2)
+        return json.dumps(loans)
 
 
 async def compare_banks(bank_names: str) -> str:
@@ -383,8 +375,7 @@ async def compare_banks(bank_names: str) -> str:
                     "has_islamic_banking": bank.has_islamic_banking,
                     "branch_count": bank.branch_count,
                     "atm_count": bank.atm_count,
-                    "description": bank.description,
                 })
 
         logger.info(f"compare_banks returned {len(banks)} results for: {bank_names}")
-        return json.dumps(banks, indent=2)
+        return json.dumps(banks)

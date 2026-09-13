@@ -24,10 +24,15 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    # --- Groq LLM ---
+     # --- Groq LLM (primary provider) ---
     GROQ_API_KEY: str
-    GROQ_MODEL: str = "qwen/qwen3.8-27b"
+    GROQ_MODEL: str = "openai/gpt-oss-120b"
     GROQ_TRIAGE_MODEL: str = "openai/gpt-oss-20b"
+
+    # --- Gemini LLM (fallback provider, OpenAI-compatible endpoint) ---
+    GEMINI_API_KEY: str
+    GEMINI_MODEL: str = "gemini-3.6-flash"
+    GEMINI_TRIAGE_MODEL: str = "gemini-3.6-flash"
 
     @property
     def cors_origins_list(self) -> list[str]:

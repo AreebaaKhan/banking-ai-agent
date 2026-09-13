@@ -165,7 +165,6 @@
 .messageRow {
   display: flex;
   gap: 10px;
-  max-width: 700px;
   width: 100%;
   margin: 0;
   animation: msgFadeIn 0.3s ease-out;
@@ -221,7 +220,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-width: 80%;
+  max-width: 92%;
   min-width: 0;
 }
 
@@ -233,11 +232,12 @@
 }
 
 .bubble {
-  padding: 16px 22px;
+  padding: 14px 20px;
   border-radius: 14px;
-  font-size: 18px;
-  line-height: 1.65;
+  font-size: 16px;
+  line-height: 1.7;
   word-break: break-word;
+  overflow-x: auto;
 }
 
 .userBubble {
@@ -256,11 +256,7 @@
 
 .aiBubble .markdown-content p,
 .aiBubble .markdown-content li {
-  color: #f6faff;
-}
-
-.aiBubble .markdown-content p {
-  text-shadow: 0 0 1px rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
 
 .aiBubble .markdown-content p:last-child {
@@ -305,9 +301,9 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  max-width: 700px;
+  max-width: 850px;
   width: 100%;
-  margin: 0 auto;
+  margin: 0;
   padding-left: 42px;
 }
 
@@ -431,6 +427,17 @@
 .micBtn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+.micBtnActive {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  animation: pulse-red 1.5s infinite;
+}
+
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 /* Send button */

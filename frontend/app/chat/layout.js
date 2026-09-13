@@ -54,6 +54,7 @@ export default function ChatLayout({ children }) {
   }, [fetchConversations]);
 
   const handleNewChat = () => {
+    window.dispatchEvent(new Event("reset-chat"));
     router.push("/chat");
   };
 

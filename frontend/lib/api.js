@@ -120,7 +120,7 @@ class ApiClient {
   /**
    * Send a chat message and return a ReadableStream for SSE processing.
    */
-  async sendMessageStream(message, conversationId = null) {
+  async sendMessageStream(message, conversationId = null, language = "EN") {
     const url = `${API_BASE}/api/chat/send`;
     const headers = {
       "Content-Type": "application/json",
@@ -136,6 +136,7 @@ class ApiClient {
       body: JSON.stringify({
         message,
         conversation_id: conversationId,
+        language,
       }),
     });
 
@@ -202,6 +203,17 @@ class ApiClient {
 
   async getAnalytics() {
     return this.get("/api/analytics");
+  }
+
+  async changePassword(currentPassword, newPassword) {
+    const res = await this.request("/api/auth/change-password", {
+      method: "PUT",
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    });
+    return res.json();
   }
 }
 

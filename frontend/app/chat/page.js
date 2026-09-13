@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import api from "@/lib/api";
+import { useVoiceInput } from "@/lib/useVoiceInput";
 import styles from "./chat-page.module.css";
 import AiCompanion from "@/components/AiCompanion";
-import QuickReplies, { BANKING_QUICK_REPLIES } from "@/components/QuickReplies";
+import MessageBubble from "@/components/MessageBubble";
+import { formatAgentName } from "@/lib/chat-utils";
 
 const SUGGESTIONS = [
   "Which bank is best for students?",
@@ -26,14 +28,38 @@ export default function NewChatPage() {
   const [currentAgent, setCurrentAgent] = useState(null);
   const [companionStatus, setCompanionStatus] = useState("idle");
   const [lang, setLang] = useState("EN");
+  const [activeConversationId, setActiveConversationId] = useState(null);
   const messagesEndRef = useRef(null);
+
+  // Voice input — appends transcribed speech to the message input
+  const handleVoiceTranscript = useCallback((text) => {
+    setMessage((prev) => prev + text);
+  }, []);
+  const { isListening, interimText, isSupported: voiceSupported, toggleListening } =
+    useVoiceInput(lang, handleVoiceTranscript);
   const inputRef = useRef(null);
+
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(scrollToBottom, [messages]);
+
+  // Listen for reset-chat event (from New Chat button)
+  const resetChat = useCallback(() => {
+    setMessages([]);
+    setStreaming(false);
+    setCurrentAgent(null);
+    setCompanionStatus("idle");
+    setMessage("");
+    setActiveConversationId(null);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("reset-chat", resetChat);
+    return () => window.removeEventListener("reset-chat", resetChat);
+  }, [resetChat]);
 
   const handleSend = async (text = null) => {
     const msgText = text || message.trim();
@@ -52,11 +78,11 @@ export default function NewChatPage() {
     ]);
 
     try {
-      const response = await api.sendMessageStream(msgText, null);
+      const response = await api.sendMessageStream(msgText, activeConversationId, lang);
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
-      let conversationId = null;
+      let conversationId = activeConversationId;
 
       setCompanionStatus("streaming");
 
@@ -75,6 +101,7 @@ export default function NewChatPage() {
 
             if (data.type === "conversation_id") {
               conversationId = data.id;
+              setActiveConversationId(data.id);
             } else if (data.type === "content") {
               setMessages((prev) =>
                 prev.map((m) =>
@@ -93,7 +120,8 @@ export default function NewChatPage() {
             } else if (data.type === "done") {
               if (conversationId) {
                 window.__refreshConversations?.();
-                router.push(`/chat/${conversationId}`);
+                // Use replaceState to update URL without triggering a re-render/flicker
+                window.history.replaceState(null, "", `/chat/${conversationId}`);
               }
             } else if (data.type === "error") {
               setMessages((prev) =>
@@ -162,14 +190,19 @@ export default function NewChatPage() {
                 <textarea
                   ref={inputRef}
                   className={styles.chatInput}
-                  placeholder="Type your message..."
-                  value={message}
+                  placeholder={isListening ? "Listening..." : "Type your message..."}
+                  value={message + (interimText ? interimText : "")}
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyDown={handleKeyDown}
                   rows={1}
                 />
-                {/* Mic button — visual only for now */}
-                <button className={styles.micBtn} title="Voice input coming soon">
+                <button
+                  className={`${styles.micBtn} ${isListening ? styles.micBtnActive : ""}`}
+                  onClick={toggleListening}
+                  disabled={!voiceSupported}
+                  title={!voiceSupported ? "Voice input not supported in this browser" : isListening ? "Stop recording" : "Start voice input"}
+                  type="button"
+                >
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="1" width="6" height="11" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
                 </button>
               </div>
@@ -223,13 +256,19 @@ export default function NewChatPage() {
               <textarea
                 ref={inputRef}
                 className={styles.chatInput}
-                placeholder="Type your message..."
-                value={message}
+                placeholder={isListening ? "Listening..." : "Type your message..."}
+                value={message + (interimText ? interimText : "")}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={handleKeyDown}
                 rows={1}
               />
-              <button className={styles.micBtn} disabled title="Voice input coming soon">
+              <button
+                className={`${styles.micBtn} ${isListening ? styles.micBtnActive : ""}`}
+                onClick={toggleListening}
+                disabled={!voiceSupported}
+                title={!voiceSupported ? "Voice input not supported in this browser" : isListening ? "Stop recording" : "Start voice input"}
+                type="button"
+              >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="9" y="1" width="6" height="11" rx="3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
               </button>
             </div>
@@ -246,146 +285,4 @@ export default function NewChatPage() {
       <AiCompanion status={companionStatus} userName={user?.full_name} />
     </div>
   );
-}
-
-
-/**
- * Detects if an AI message contains a question with selectable options.
- * Looks for patterns like lines ending with ? followed by bullet items.
- */
-function detectQuickReplies(content) {
-  if (!content) return null;
-
-  // Pattern: question mark followed by options as bullet points or numbered list
-  const lines = content.split('\n').map(l => l.trim()).filter(Boolean);
-  const options = [];
-
-  for (const line of lines) {
-    const match = line.match(/^[-*•]\s*(.+)$/);
-    if (match && match[1].length < 50) {
-      options.push(match[1].replace(/\*\*/g, '').trim());
-    }
-  }
-
-  // Also detect employment-like questions
-  const lowerContent = content.toLowerCase();
-  if (lowerContent.includes('employment') || lowerContent.includes('occupation') || lowerContent.includes('profession')) {
-    if (options.length === 0) {
-      return ["Student", "Salaried", "Self-employed", "Business Owner", "Other"];
-    }
-  }
-
-  if (options.length >= 2 && options.length <= 8) {
-    return options;
-  }
-
-  return null;
-}
-
-
-function MessageBubble({ message, onSend, streaming, userName }) {
-  const isUser = message.role === "user";
-  const [copied, setCopied] = useState(false);
-  const [quickRepliesUsed, setQuickRepliesUsed] = useState(false);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(message.content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  // Detect quick-reply options in AI messages
-  const quickOptions = !isUser && !streaming && !quickRepliesUsed
-    ? detectQuickReplies(message.content)
-    : null;
-
-  const handleQuickReply = (text) => {
-    setQuickRepliesUsed(true);
-    onSend(text);
-  };
-
-  return (
-    <div className={`${styles.messageRow} ${isUser ? styles.userRow : styles.assistantRow}`}>
-      <div className={`${styles.avatar} ${isUser ? styles.userAvatar : styles.aiAvatar}`}>
-        {isUser ? (
-          <span className={styles.avatarInitial}>{getInitials(userName)}</span>
-        ) : (
-          <img src="/images/brand-icon.png" alt="AI" style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: 8 }} />
-        )}
-      </div>
-      <div className={styles.bubbleWrapper}>
-        {!isUser && message.agent_name && (
-          <span className={styles.agentBadge}>{formatAgentName(message.agent_name)}</span>
-        )}
-        <div className={`${styles.bubble} ${isUser ? styles.userBubble : styles.aiBubble}`}>
-          <div className="markdown-content" dangerouslySetInnerHTML={{ __html: simpleMarkdown(message.content) }} />
-        </div>
-
-        {/* Quick reply options */}
-        {quickOptions && (
-          <QuickReplies
-            label="Smart Question"
-            options={quickOptions}
-            onSelect={handleQuickReply}
-            disabled={streaming}
-          />
-        )}
-
-        {!isUser && message.content && (
-          <div className={styles.messageActions}>
-            <button className={styles.actionBtn} onClick={handleCopy} title="Copy response">
-              {copied ? (
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10B981" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
-              ) : (
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-              )}
-              {copied ? "Copied" : "Copy"}
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-
-function formatAgentName(name) {
-  if (!name) return "";
-  return name
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-    .replace("Triage Agent", "AI Advisor");
-}
-function getInitials(name) {
-  if (!name) return "U";
-  const parts = name.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
-}
-function simpleMarkdown(text) {
-  if (!text) return "";
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-    .replace(/\*(.*?)\*/g, "<em>$1</em>")
-    .replace(/^### (.*$)/gm, "<h3>$1</h3>")
-    .replace(/^## (.*$)/gm, "<h2>$1</h2>")
-    .replace(/^# (.*$)/gm, "<h1>$1</h1>")
-    .replace(/```([\s\S]*?)```/g, "<pre><code>$1</code></pre>")
-    .replace(/`(.*?)`/g, "<code>$1</code>")
-    .replace(/^\|(.+)\|$/gm, (match) => {
-      const cells = match.split("|").filter(Boolean).map((c) => c.trim());
-      if (cells.every((c) => /^[-:]+$/.test(c))) return "";
-      return `<tr>${cells.map((c) => `<td>${c}</td>`).join("")}</tr>`;
-    })
-    .replace(/((?:<tr>.*<\/tr>\s*)+)/g, "<table>$1</table>")
-    .replace(/^---$/gm, "<hr/>")
-    .replace(/^[-*] (.*$)/gm, "<li>$1</li>")
-    .replace(/((?:<li>.*<\/li>\s*)+)/g, "<ul>$1</ul>")
-    .replace(/^\d+\. (.*$)/gm, "<li>$1</li>")
-    .replace(/\n\n/g, "</p><p>")
-    .replace(/\n/g, "<br/>")
-    .replace(/^(.+)/, "<p>$1</p>");
 }

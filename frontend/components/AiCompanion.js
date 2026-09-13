@@ -18,15 +18,14 @@ export default function AiCompanion({ status = "idle", userName }) {
       <div className={styles.glow} />
 
       <div className={styles.inner}>
-        {status === "thinking" && (
-          <div className={styles.thinkingBubble}>
-            <span /><span /><span />
-          </div>
-        )}
-
         <div className={styles.mascotWrap}>
           <div className={styles.mascotHalo} />
           <div className={active ? styles.robotActive : styles.robot}>
+            {status === "thinking" && (
+              <div className={styles.thinkingBubble}>
+                <span /><span /><span />
+              </div>
+            )}
             <RobotSvg blink />
           </div>
         </div>

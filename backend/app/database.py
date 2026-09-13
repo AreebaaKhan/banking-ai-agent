@@ -16,13 +16,18 @@ from app.config import get_settings
 
 settings = get_settings()
 
-# Connection pool: max 20 connections, recycle every 30 min to avoid stale conns
+# Connection pool tuned for Neon serverless Postgres:
+# - pool_pre_ping: test connections before use (detects Neon's idle disconnects)
+# - pool_recycle: 300s matches Neon's ~5 min idle timeout
+# - pool_timeout: fail fast if no connection available
 engine = create_async_engine(
     settings.DATABASE_URL,
     echo=(settings.APP_ENV == "development"),
     pool_size=10,
     max_overflow=20,
-    pool_recycle=1800,
+    pool_recycle=300,
+    pool_pre_ping=True,
+    pool_timeout=30,
 )
 
 async_session = async_sessionmaker(

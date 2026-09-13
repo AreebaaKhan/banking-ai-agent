@@ -144,6 +144,7 @@ async def send_message(
                 message=request.message,
                 conversation_history=conv_data.get("messages", []) if conv_data else [],
                 user_info={"name": user.full_name, "city": user.city},
+                language=request.language or "EN",
                 db=db,
             ):
                 if chunk.get("type") == "content":

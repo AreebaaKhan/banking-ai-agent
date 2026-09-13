@@ -13,6 +13,7 @@ from app.schemas.auth import (
     RefreshRequest,
     UserResponse,
     MessageResponse,
+    ChangePasswordRequest,
 )
 from app.services.auth_service import AuthService
 from app.middleware.auth_middleware import get_current_user
@@ -77,3 +78,22 @@ async def get_me(user: User = Depends(get_current_user)):
         city=user.city,
         created_at=user.created_at,
     )
+
+
+@router.put("/change-password", response_model=MessageResponse)
+async def change_password(
+    request: ChangePasswordRequest,
+    user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Change user password."""
+    try:
+        await AuthService.change_password(
+            db=db,
+            user=user,
+            current_password=request.current_password,
+            new_password=request.new_password,
+        )
+        return {"message": "Password changed successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

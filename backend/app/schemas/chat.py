@@ -9,6 +9,7 @@ from datetime import datetime
 class SendMessageRequest(BaseModel):
     message: str = Field(..., min_length=1, max_length=5000)
     conversation_id: str | None = None  # None = create new conversation
+    language: str | None = "EN"  # "EN" or "UR" — controls AI response language/script
 
 
 class MessageOut(BaseModel):

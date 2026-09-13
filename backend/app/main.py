@@ -13,7 +13,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import get_settings
 from app.database import engine, Base
-from app.api import auth, chat, banks
+from app.api import auth, chat, banks, analytics
 from app.utils.logger import logger
 
 settings = get_settings()
@@ -61,6 +61,7 @@ app.add_middleware(
 app.include_router(auth.router)
 app.include_router(chat.router)
 app.include_router(banks.router)
+app.include_router(analytics.router)
 
 
 # ─── Global Error Handler ────────────────────────────────────────────

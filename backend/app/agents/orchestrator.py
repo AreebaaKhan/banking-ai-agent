@@ -34,12 +34,75 @@ from app.utils.logger import logger
 
 settings = get_settings()
 
-# ─── Groq Client (OpenAI-compatible) ─────────────────────────────────
-
-groq_client = AsyncOpenAI(
+# ─── LLM Clients (one per provider, OpenAI-compatible) ───────────────
+groq_llm_client = AsyncOpenAI(
     api_key=settings.GROQ_API_KEY,
     base_url="https://api.groq.com/openai/v1",
+    timeout=30.0,
 )
+
+gemini_llm_client = AsyncOpenAI(
+    api_key=settings.GEMINI_API_KEY,
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+    timeout=30.0,
+)
+
+# ─── Fallback Chains (tried in order, top to bottom) ─────────────────
+# Main agent responses: try Groq's big model, then Groq's small model,
+# then Gemini as last resort.
+MAIN_PROVIDER_CHAIN = [
+    {"name": "groq-main", "client": groq_llm_client, "model": settings.GROQ_MODEL},
+    {"name": "gemini-flash", "client": gemini_llm_client, "model": settings.GEMINI_MODEL},
+]
+
+# Triage (intent detection): same idea, lighter models first.
+TRIAGE_PROVIDER_CHAIN = [
+    {"name": "groq-triage", "client": groq_llm_client, "model": settings.GROQ_TRIAGE_MODEL},
+    {"name": "gemini-triage", "client": gemini_llm_client, "model": settings.GEMINI_TRIAGE_MODEL},
+]
+
+
+async def call_llm(messages, tools=None, tool_choice=None, stream=False,
+                    temperature=0.6, max_tokens=2048, triage=False):
+    """
+    Try each provider in the fallback chain until one responds successfully.
+    Silently skips a provider on error (rate limit, invalid model, etc.)
+    and moves to the next one. Only raises if ALL providers fail.
+    """
+    chain = TRIAGE_PROVIDER_CHAIN if triage else MAIN_PROVIDER_CHAIN
+    last_error = None
+
+    for provider in chain:
+        try:
+            kwargs = {
+                "model": provider["model"],
+                "messages": messages,
+                "temperature": temperature,
+                "max_tokens": max_tokens,
+            }
+            if tools is not None:
+                kwargs["tools"] = tools
+            if tool_choice is not None:
+                kwargs["tool_choice"] = tool_choice
+            if stream:
+                kwargs["stream"] = True
+
+            response = await provider["client"].chat.completions.create(**kwargs)
+            return response
+        except Exception as e:
+            logger.warning(
+                f"Provider '{provider['name']}' (model={provider['model']}) failed: "
+                f"{type(e).__name__}: {e}"
+            )
+            last_error = e
+            continue
+
+    # Every provider in the chain failed
+    provider_names = [p["name"] for p in chain]
+    logger.error(f"ALL providers failed: {provider_names}. Last error: {type(last_error).__name__}: {last_error}")
+    if last_error is not None:
+        raise last_error
+    raise RuntimeError("No LLM providers available in the chain.")
 
 # ─── Intent → Agent Mapping ──────────────────────────────────────────
 
@@ -87,13 +150,16 @@ async def detect_intent(message: str, history: list[dict]) -> str:
                 messages.append({"role": m["role"], "content": m["content"][:200]})
         messages.append({"role": "user", "content": message})
 
-        response = await groq_client.chat.completions.create(
-            model=settings.GROQ_TRIAGE_MODEL,
+        response = await call_llm(
             messages=messages,
             max_tokens=10,
             temperature=0,
+            triage=True,
         )
-        intent = response.choices[0].message.content.strip().lower()
+        raw = response.choices[0].message.content
+        if not raw:
+            return "general"
+        intent = raw.strip().lower()
 
         # Validate it's one of our intents
         if intent in INTENT_PROMPTS:
@@ -181,6 +247,7 @@ async def run_agent(
     message: str,
     conversation_history: list[dict],
     user_info: dict,
+    language: str = "EN",
     db=None,
 ) -> AsyncGenerator[dict, None]:
     """
@@ -218,6 +285,13 @@ async def run_agent(
         if context_parts:
             system_content += "\n\n## User Context:\n" + " ".join(context_parts)
 
+        # Inject language directive based on user's toggle selection
+        if language == "UR":
+            system_content += "\n\n## CRITICAL Language Override:\nThe user has set their language preference to Urdu (UR). You MUST respond ENTIRELY in Urdu script (\u0627\u0631\u062f\u0648 \u0646\u0633\u062a\u0639\u0644\u06cc\u0642).\n- ALL text MUST be in proper Urdu script \u2014 NOT Roman Urdu, NOT English.\n- Use right-to-left Urdu script for everything: headings, bullet points, explanations, recommendations, questions, and options.\n- Bank names (e.g. HBL, Meezan Bank), technical abbreviations (PKR, SBP, KIBOR), and proper nouns can remain in English.\n- Markdown formatting (###, **, -, |) should still be used, but all text content must be in Urdu script.\n- This is NON-NEGOTIABLE. Even if the user writes in English or Roman Urdu, you respond in Urdu script.\n"
+        else:
+            # EN mode: match the user's language/script naturally
+            system_content += "\n\n## Language Matching:\nMatch the user's language exactly:\n- If the user writes in English, respond entirely in English.\n- If the user writes in Roman Urdu (e.g. 'mujhe account khulwana hai'), respond in Roman Urdu.\n- If the user writes in Urdu script, respond in Urdu script.\n- Do NOT mix languages unless the user does so first.\n"
+
         messages = [{"role": "system", "content": system_content}]
 
         # Add conversation history (last 16 messages)
@@ -232,96 +306,96 @@ async def run_agent(
         if not messages or messages[-1].get("content") != message or messages[-1].get("role") != "user":
             messages.append({"role": "user", "content": message})
 
-        # Step 3: First call — with tools (non-streaming to detect tool calls)
-        try:
-            first_response = await groq_client.chat.completions.create(
-                model=settings.GROQ_MODEL,
-                messages=messages,
-                tools=TOOL_DEFINITIONS,
-                tool_choice="auto",
-                temperature=0.6,
-                max_tokens=2048,
-                extra_body={"reasoning_effort": "none"}
-            )
+        # Step 3 & 4: LLM call with tool-calling loop (max 3 rounds)
+        # Each round: call LLM → if it wants tools, execute them and loop.
+        # If it returns text content, yield it and stop.
+        MAX_TOOL_ROUNDS = 3
 
-            assistant_message = first_response.choices[0].message
+        for round_num in range(MAX_TOOL_ROUNDS + 1):
+            try:
+                response = await call_llm(
+                    messages=messages,
+                    tools=TOOL_DEFINITIONS,
+                    tool_choice="auto",
+                    temperature=0.6,
+                    max_tokens=2048,
+                )
+                assistant_message = response.choices[0].message
+            except Exception as e:
+                if round_num == 0:
+                    # First round failed — try plain chat without tools
+                    logger.warning(f"Tool-calling failed, falling back to plain chat: {e}")
+                    stream = await call_llm(
+                        messages=messages,
+                        stream=True,
+                        temperature=0.6,
+                        max_tokens=2048,
+                    )
+                    async for chunk in stream:
+                        if chunk.choices and chunk.choices[0].delta.content:
+                            yield {
+                                "type": "content",
+                                "content": chunk.choices[0].delta.content,
+                            }
+                    return
+                else:
+                    # Later rounds — let outer except handle it
+                    raise
 
-        except Exception as e:
-            # If tool-calling fails (model incompatibility), fall back to no-tools
-            logger.warning(f"Tool-calling failed, falling back to plain chat: {e}")
-            stream = await groq_client.chat.completions.create(
-                model=settings.GROQ_MODEL,
-                messages=messages,
-                stream=True,
-                temperature=0.6,
-                max_tokens=2048,
-                extra_body={"reasoning_effort": "none"},
-            )
-            async for chunk in stream:
-                if chunk.choices and chunk.choices[0].delta.content:
-                    yield {
-                        "type": "content",
-                        "content": chunk.choices[0].delta.content,
-                    }
-            return
+            # Check if the model wants to call tools
+            if assistant_message.tool_calls:
+                logger.info(
+                    f"Model requested {len(assistant_message.tool_calls)} tool call(s) "
+                    f"(round {round_num + 1})"
+                )
+                messages.append(assistant_message)
 
-        # Step 4: Check if the model wants to call tools
-        if assistant_message.tool_calls:
-            logger.info(f"Model requested {len(assistant_message.tool_calls)} tool call(s)")
+                for tc in assistant_message.tool_calls:
+                    func_name = tc.function.name
+                    try:
+                        func_args = json.loads(tc.function.arguments) if tc.function.arguments else {}
+                    except json.JSONDecodeError:
+                        func_args = {}
 
-            # Add assistant message with tool calls to conversation
-            messages.append(assistant_message)
+                    logger.info(f"Executing tool: {func_name}({func_args})")
+                    result = await execute_tool(func_name, func_args)
 
-            # Execute each tool
-            for tc in assistant_message.tool_calls:
-                func_name = tc.function.name
-                try:
-                    func_args = json.loads(tc.function.arguments) if tc.function.arguments else {}
-                except json.JSONDecodeError:
-                    func_args = {}
+                    messages.append({
+                        "role": "tool",
+                        "tool_call_id": tc.id,
+                        "content": result,
+                    })
+                # Loop back — next round will see tool results
+                continue
 
-                logger.info(f"Executing tool: {func_name}({func_args})")
-                result = await execute_tool(func_name, func_args)
-
-                messages.append({
-                    "role": "tool",
-                    "tool_call_id": tc.id,
-                    "content": result,
-                })
-
-            # Step 5: Stream the final response with tool results
-            final_stream = await groq_client.chat.completions.create(
-                model=settings.GROQ_MODEL,
-                messages=messages,
-                stream=True,
-                temperature=0.6,
-                max_tokens=2048,
-                extra_body={"reasoning_effort": "none"},
-            )
-
-            async for chunk in final_stream:
-                if chunk.choices and chunk.choices[0].delta.content:
-                    yield {
-                        "type": "content",
-                        "content": chunk.choices[0].delta.content,
-                    }
-        else:
-            # No tools needed — yield the response directly
+            # No tools — yield the text response and we're done
             content = assistant_message.content or ""
             if content:
                 yield {
                     "type": "content",
                     "content": content,
                 }
+            else:
+                yield {
+                    "type": "content",
+                    "content": "I apologize, but I wasn't able to generate a response. Please try asking your question in a different way.",
+                }
+            return  # Successfully done
+
+        # Exhausted all tool-calling rounds (model kept calling tools)
+        logger.warning(f"Exhausted {MAX_TOOL_ROUNDS} tool-calling rounds without a text response")
+        yield {
+            "type": "content",
+            "content": "I apologize, but I wasn't able to generate a response. Please try asking your question in a different way.",
+        }
 
     except Exception as e:
-        logger.error(f"Agent error: {type(e).__name__}: {str(e)}")
+        logger.error(f"Agent error (all providers failed): {type(e).__name__}: {str(e)}")
         yield {
             "type": "content",
             "content": (
-                "I apologize, I'm having trouble connecting to the AI service right now. "
-                "Please check that your GROQ_API_KEY is correctly set in the `.env` file and try again.\n\n"
-                f"*Error: {type(e).__name__}: {str(e)}*"
+                "I'm having trouble reaching the AI service right now. "
+                "Please try again in a moment."
             ),
         }
         yield {
