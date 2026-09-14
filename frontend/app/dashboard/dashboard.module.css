@@ -799,6 +799,11 @@
   .tabs {
     padding: 10px 18px 0;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Firefox */
+  }
+  .tabs::-webkit-scrollbar {
+    display: none; /* Safari/Chrome */
   }
 
   .planCard {

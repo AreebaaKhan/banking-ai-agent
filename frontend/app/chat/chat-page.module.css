@@ -445,9 +445,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
   background: none;
   border-radius: 8px;
   color: #5a9cf5;
@@ -534,37 +534,69 @@
 
 @media (max-width: 768px) {
   .welcomeTitle {
-    font-size: 32px;
+    font-size: 28px;
+  }
+
+  .welcomeScreen {
+    padding-top: 20px;
+    padding-bottom: 20px;
   }
 
   .suggestions {
     grid-template-columns: 1fr;
     width: 100%;
+    gap: 8px;
   }
 
   .suggestionChip {
-    font-size: 12px;
-    padding: 8px 14px;
+    font-size: 13px;
+    padding: 10px 14px;
+    justify-content: flex-start;
   }
 
   .bubbleWrapper {
-    max-width: 88%;
+    max-width: 90%;
   }
 
   .messagesArea {
-    padding: 16px 10px;
+    /* Add top padding to clear the hamburger button */
+    padding: 60px 12px 16px;
+  }
+
+  .inputArea {
+    padding: 12px 10px;
+  }
+
+  .inputRow {
+    gap: 6px;
+  }
+
+  .inputWrapper {
+    padding: 8px 8px 8px 14px;
+  }
+
+  .micBtn, .sendBtn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
   }
 
   .langToggle {
-  min-height: 48px;
-  border: 1px solid rgba(90, 156, 245, 0.4);
-  border-radius: 10px;
-}
+    min-height: 48px;
+    border: 1px solid rgba(90, 156, 245, 0.4);
+    border-radius: 10px;
+  }
+  
+  .langBtn {
+    min-width: 40px;
+    min-height: 48px;
+    padding: 0 8px;
+    font-size: 14px;
+  }
 
   .suggestionChip:nth-child(5),
-    .suggestionChip:nth-child(6) {
-      grid-column: auto;
-      justify-self: center;
-    }
-
+  .suggestionChip:nth-child(6) {
+    grid-column: auto;
+    justify-self: stretch;
+  }
 }

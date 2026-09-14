@@ -132,12 +132,7 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Simulate an 80% zoom out by default on desktop screens */
-@media (min-width: 1024px) {
-  html {
-    font-size: 13px;
-  }
-}
+
 
 body {
   font-family: var(--font-family);

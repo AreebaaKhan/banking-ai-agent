@@ -15,7 +15,7 @@ export default function ChatLayout({ children }) {
 
   const [conversations, setConversations] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [sidebarWidth, setSidebarWidth] = useState(400);
+  const [sidebarWidth, setSidebarWidth] = useState(280);
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingConvs, setLoadingConvs] = useState(true);
   const [dragging, setDragging] = useState(false);
@@ -23,15 +23,27 @@ export default function ChatLayout({ children }) {
 
   const activeConvId = pathname.startsWith("/chat/") ? pathname.split("/chat/")[1] : null;
 
-  // Restore saved width
+  // Restore saved width and handle initial mobile state
   useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem("sidebarWidth") : null;
-    if (saved) setSidebarWidth(Number(saved));
+    if (typeof window !== "undefined") {
+      if (window.innerWidth < 768) {
+        setSidebarOpen(false);
+      } else {
+        const saved = localStorage.getItem("sidebarWidth");
+        if (saved) setSidebarWidth(Number(saved));
+      }
+    }
   }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") localStorage.setItem("sidebarWidth", String(sidebarWidth));
   }, [sidebarWidth]);
+
+  const closeSidebarOnMobile = () => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  };
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -55,6 +67,7 @@ export default function ChatLayout({ children }) {
 
   const handleNewChat = () => {
     window.dispatchEvent(new Event("reset-chat"));
+    closeSidebarOnMobile();
     router.push("/chat");
   };
 
@@ -87,7 +100,7 @@ export default function ChatLayout({ children }) {
     const handleMove = (ev) => {
       if (!dragState.current) return;
       const delta = ev.clientX - dragState.current.startX;
-      const next = Math.min(Math.max(dragState.current.startWidth + delta, 260), 500);
+      const next = Math.min(Math.max(dragState.current.startWidth + delta, 220), 400);
       setSidebarWidth(next);
     };
     const handleUp = () => {
@@ -123,7 +136,7 @@ export default function ChatLayout({ children }) {
     <div className={styles.chatLayout}>
       {/* Sidebar */}
       <aside
-        className={styles.sidebar}
+        className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : styles.sidebarClosed}`}
         style={{ width: sidebarOpen ? sidebarWidth : 0 }}
       >
         <div className={styles.sidebarHeader}>
@@ -196,8 +209,16 @@ export default function ChatLayout({ children }) {
                     role="button"
                     tabIndex={0}
                     className={`${styles.convItem} ${activeConvId === conv.id ? styles.convActive : ""}`}
-                    onClick={() => router.push(`/chat/${conv.id}`)}
-                    onKeyDown={(e) => e.key === "Enter" && router.push(`/chat/${conv.id}`)}
+                    onClick={() => {
+                      closeSidebarOnMobile();
+                      router.push(`/chat/${conv.id}`);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        closeSidebarOnMobile();
+                        router.push(`/chat/${conv.id}`);
+                      }
+                    }}
                   >
                     <div className={styles.convTitle}>{conv.title}</div>
                     <div className={styles.convMeta}>
@@ -214,11 +235,11 @@ export default function ChatLayout({ children }) {
         </div>
 
         <div className={styles.sidebarFooter}>
-          <button onClick={() => router.push("/dashboard")} className={styles.footerBtn}>
+          <button onClick={() => { closeSidebarOnMobile(); router.push("/dashboard"); }} className={styles.footerBtn}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
             Dashboard
           </button>
-          <button onClick={logout} className={styles.footerBtn}>
+          <button onClick={() => { closeSidebarOnMobile(); logout(); }} className={styles.footerBtn}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
             Logout
           </button>
@@ -245,10 +266,16 @@ export default function ChatLayout({ children }) {
       <button
         className={styles.mobileToggle}
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        title={sidebarOpen ? "Collapse sidebar" : "Open sidebar"}
-        aria-label={sidebarOpen ? "Collapse sidebar" : "Open sidebar"}
+        title={sidebarOpen ? "Close sidebar" : "Open menu"}
+        aria-label={sidebarOpen ? "Close sidebar" : "Open menu"}
       >
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d={sidebarOpen ? "M15 18l-6-6 6-6" : "M9 18l6-6-6-6"}/></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          {sidebarOpen ? (
+            <path d="M18 6L6 18M6 6l12 12" />
+          ) : (
+            <path d="M3 12h18M3 6h18M3 18h18" />
+          )}
+        </svg>
       </button>
 
       {sidebarOpen && <div className={styles.overlay} onClick={() => setSidebarOpen(false)} />}
